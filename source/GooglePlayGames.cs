@@ -42,12 +42,21 @@ namespace GooglePlayGamesLibrary
             }
         }
 
-        public static bool IsInstalled
+        public static string MainExecutablePath
         {
             get
             {
                 var path = InstallationPath;
-                return !string.IsNullOrEmpty(path) && Directory.Exists(path);
+                return string.IsNullOrEmpty(path) ? string.Empty : Path.Combine(path, "Bootstrapper.exe");
+            }
+        }
+
+        public static bool IsInstalled
+        {
+            get
+            {
+                var path = MainExecutablePath;
+                return !string.IsNullOrEmpty(path) && File.Exists(path);
             }
         }
     }
