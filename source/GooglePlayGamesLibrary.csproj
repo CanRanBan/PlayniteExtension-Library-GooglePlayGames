@@ -54,6 +54,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GooglePlayGames.cs" />
     <Compile Include="GooglePlayGamesLibraryClient.cs" />
     <Compile Include="GooglePlayGamesLibrary.cs" />
     <Compile Include="GooglePlayGamesLibrarySettings.cs" />
