@@ -9,7 +9,7 @@ namespace GooglePlayGamesLibrary
 {
     public class GooglePlayGamesLibraryClient : LibraryClient
     {
-        public override bool IsInstalled => true;
+        public override bool IsInstalled => GooglePlayGames.IsInstalled;
 
         public override void Open()
         {
