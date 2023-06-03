@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace GooglePlayGamesLibrary
 {
@@ -88,5 +89,7 @@ namespace GooglePlayGamesLibrary
                 return !string.IsNullOrEmpty(path) && File.Exists(path);
             }
         }
+
+        public static string Icon => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "icon.png");
     }
 }
