@@ -30,6 +30,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleasePack|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -84,4 +93,7 @@
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="('$(Configuration)' == 'ReleasePack') AND ('$(Playnite_Toolbox_Dir)' != '') AND ('$(Playnite_Toolbox_TargetDir)' != '')">
+    <Exec Command="%22$(Playnite_Toolbox_Dir)\Toolbox.exe%22 pack %22$(TargetDir.TrimEnd('\'))%22 %22$(Playnite_Toolbox_TargetDir)%22" />
+  </Target>
 </Project>
