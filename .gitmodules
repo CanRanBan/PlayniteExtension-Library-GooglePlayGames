@@ -1,0 +1,4 @@
+[submodule "include/PlayniteSource"]
+	path = include/PlayniteSource
+	url = https://github.com/CanRanBan/PlayniteFork.git
+	branch = LocalBuild
