@@ -82,12 +82,22 @@ namespace GooglePlayGamesLibrary
             }
         }
 
+        public static string ServiceExecutablePath
+        {
+            get
+            {
+                var path = InstallationPath;
+                return string.IsNullOrEmpty(path) ? string.Empty : Path.Combine(path, "current", "service", "Service.exe");
+            }
+        }
+
         public static bool IsInstalled
         {
             get
             {
-                var path = MainExecutablePath;
-                return !string.IsNullOrEmpty(path) && File.Exists(path);
+                var mainPath = MainExecutablePath;
+                var servicePath = ServiceExecutablePath;
+                return !string.IsNullOrEmpty(mainPath) && !string.IsNullOrEmpty(servicePath) && File.Exists(mainPath) && File.Exists(servicePath);
             }
         }
 
