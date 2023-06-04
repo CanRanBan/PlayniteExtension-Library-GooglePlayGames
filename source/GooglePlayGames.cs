@@ -110,7 +110,7 @@ namespace GooglePlayGamesLibrary
 
         public static void ExitClient()
         {
-            ProcessStarter.StartProcess(MainExecutablePath, "/exit", InstallationPath);
+            ProcessStarter.StartProcessWait(MainExecutablePath, "/exit", InstallationPath);
         }
     }
 }
