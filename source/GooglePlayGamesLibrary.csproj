@@ -82,6 +82,9 @@
     <Compile Include="..\include\PlayniteSource\source\Playnite\Native\Winbase.cs">
       <Link>include\Playnite\Native\Winbase.cs</Link>
     </Compile>
+    <Compile Include="..\include\PlayniteSource\source\Playnite\Native\Windef.cs">
+      <Link>include\Playnite\Native\Windef.cs</Link>
+    </Compile>
     <Compile Include="..\include\PlayniteSource\source\Playnite\Native\winuser.cs">
       <Link>include\Playnite\Native\winuser.cs</Link>
     </Compile>
