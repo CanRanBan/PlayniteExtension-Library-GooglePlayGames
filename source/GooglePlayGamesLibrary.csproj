@@ -44,6 +44,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,6 +55,24 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\include\PlayniteSource\source\Playnite\Common\Extensions\StringExtensions.cs">
+      <Link>include\Playnite\Common\Extensions\StringExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\include\PlayniteSource\source\Playnite\Common\ProcessStarter.cs">
+      <Link>include\Playnite\Common\ProcessStarter.cs</Link>
+    </Compile>
+    <Compile Include="..\include\PlayniteSource\source\Playnite\Native\Kernel32.cs">
+      <Link>include\Playnite\Native\Kernel32.cs</Link>
+    </Compile>
+    <Compile Include="..\include\PlayniteSource\source\Playnite\Native\Ntdll.cs">
+      <Link>include\Playnite\Native\Ntdll.cs</Link>
+    </Compile>
+    <Compile Include="..\include\PlayniteSource\source\Playnite\Native\Processthreadsapi.cs">
+      <Link>include\Playnite\Native\Processthreadsapi.cs</Link>
+    </Compile>
+    <Compile Include="..\include\PlayniteSource\source\Playnite\Native\Winbase.cs">
+      <Link>include\Playnite\Native\Winbase.cs</Link>
+    </Compile>
     <Compile Include="GooglePlayGames.cs" />
     <Compile Include="GooglePlayGamesLibraryClient.cs" />
     <Compile Include="GooglePlayGamesLibrary.cs" />
