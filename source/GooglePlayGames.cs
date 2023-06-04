@@ -77,8 +77,8 @@ namespace GooglePlayGamesLibrary
         {
             get
             {
-                var path = InstallationPath;
-                return string.IsNullOrEmpty(path) ? string.Empty : Path.Combine(path, "Bootstrapper.exe");
+                var installPath = InstallationPath;
+                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, "Bootstrapper.exe");
             }
         }
 
@@ -86,8 +86,8 @@ namespace GooglePlayGamesLibrary
         {
             get
             {
-                var path = InstallationPath;
-                return string.IsNullOrEmpty(path) ? string.Empty : Path.Combine(path, "current", "service", "Service.exe");
+                var installPath = InstallationPath;
+                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, "current", "service", "Service.exe");
             }
         }
 
