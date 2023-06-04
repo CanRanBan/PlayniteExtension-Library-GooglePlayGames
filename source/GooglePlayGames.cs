@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Playnite.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,7 +29,7 @@ namespace GooglePlayGamesLibrary
                             return dataPath;
                         }
                     }
-                    }
+                }
 
                 // Fallback to default location if registry key is missing.
                 var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -58,7 +59,7 @@ namespace GooglePlayGamesLibrary
                             return installationPath;
                         }
                     }
-                    }
+                }
 
                 // Fallback to default location if registry key is missing.
                 var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
@@ -91,5 +92,15 @@ namespace GooglePlayGamesLibrary
         }
 
         public static string Icon => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "icon.png");
+
+        public static void StartClient()
+        {
+            ProcessStarter.StartProcess(MainExecutablePath, string.Empty, InstallationPath);
+        }
+
+        public static void ExitClient()
+        {
+            ProcessStarter.StartProcess(MainExecutablePath, "/exit", InstallationPath);
+        }
     }
 }
