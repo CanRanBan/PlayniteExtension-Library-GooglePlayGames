@@ -22,13 +22,14 @@ namespace GooglePlayGamesLibrary
         public override string Name => "Google Play Games on PC Library";
 
         // Implementing Client adds ability to open it via special menu in playnite.
-        public override LibraryClient Client { get; } = new GooglePlayGamesLibraryClient();
+        public override LibraryClient Client { get; } = new GooglePlayGamesLibraryClient(logger);
 
         public GooglePlayGamesLibrary(IPlayniteAPI api) : base(api)
         {
             settings = new GooglePlayGamesLibrarySettingsViewModel(this);
             Properties = new LibraryPluginProperties
             {
+                CanShutdownClient = true,
                 HasSettings = true
             };
         }
