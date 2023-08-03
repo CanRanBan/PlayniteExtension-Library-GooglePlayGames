@@ -24,19 +24,24 @@ namespace GooglePlayGamesLibrary
 
         public override void Shutdown()
         {
-            var serviceProcessList = Process.GetProcessesByName("Service");
+            var serviceExecutableName = GooglePlayGames.ServiceExecutableName;
+
+            var serviceProcessList = Process.GetProcessesByName(serviceExecutableName);
+
             if (serviceProcessList == null)
             {
-                logger.Info("Google Play Games is no longer running, not necessary to exit client.");
+                var applicationName = GooglePlayGames.ApplicationName;
+
+                logger.Info(applicationName + @"is no longer running, not necessary to exit client.");
                 return;
             }
             else
             {
                 var servicePath = GooglePlayGames.ServiceExecutablePath;
 
-                foreach (var process in serviceProcessList)
+                foreach (var serviceProcess in serviceProcessList)
                 {
-                    var processPath = process.MainModule.FileName;
+                    var processPath = serviceProcess.MainModule.FileName;
                     if (Paths.AreEqual(servicePath, processPath))
                     {
                         GooglePlayGames.ExitClient();
@@ -44,7 +49,7 @@ namespace GooglePlayGamesLibrary
                     }
                 }
 
-                logger.Info("Other application(s) named 'Service' is/are running, not necessary to exit client.");
+                logger.Info(@"Other application(s) named '" + serviceExecutableName + @"' is/are running, not necessary to exit client.");
             }
         }
     }
