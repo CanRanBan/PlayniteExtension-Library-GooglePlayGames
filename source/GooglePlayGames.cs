@@ -10,18 +10,35 @@ namespace GooglePlayGamesLibrary
 {
     internal class GooglePlayGames
     {
+        private const string companyName = @"Google";
+        private const string productName = @"Play Games";
+
+        public const string ApplicationName = companyName + @" " + productName;
+
+        private const string registryFolder = @"Software\" + companyName + @"\" + productName;
+
+        private const string dataPathKey = @"UserLocalAppDataRoot";
+        private const string installPathKey = @"InstallFolder";
+
+        private const string mainExecutableName = @"Bootstrapper";
+        public const string ServiceExecutableName = @"Service";
+
+        private const string executableExtension = @".exe";
+
+        private const string exitCommandLineArgument = @"/exit";
+
         public static string DataPath
         {
             get
             {
                 string dataPath;
 
-                using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Google\Play Games"))
+                using (var key = Registry.LocalMachine.OpenSubKey(registryFolder))
                 {
-                    if (key?.GetValueNames().Contains("UserLocalAppDataRoot") == true)
+                    if (key?.GetValueNames().Contains(dataPathKey) == true)
                     {
-                        var rootPath = key.GetValue("UserLocalAppDataRoot")?.ToString();
-                        dataPath = Path.Combine(rootPath, "Google", "Play Games");
+                        var rootPath = key.GetValue(dataPathKey)?.ToString();
+                        dataPath = Path.Combine(rootPath, companyName, productName);
                         if (Directory.Exists(dataPath))
                         {
                             return dataPath;
@@ -31,7 +48,7 @@ namespace GooglePlayGamesLibrary
 
                 // Fallback to default location if registry key is missing.
                 var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                dataPath = Path.Combine(localAppData, "Google", "Play Games");
+                dataPath = Path.Combine(localAppData, companyName, productName);
                 if (Directory.Exists(dataPath))
                 {
                     return dataPath;
@@ -47,11 +64,11 @@ namespace GooglePlayGamesLibrary
             {
                 string installationPath;
 
-                using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Google\Play Games"))
+                using (var key = Registry.LocalMachine.OpenSubKey(registryFolder))
                 {
-                    if (key?.GetValueNames().Contains("InstallFolder") == true)
+                    if (key?.GetValueNames().Contains(installPathKey) == true)
                     {
-                        installationPath = key.GetValue("InstallFolder")?.ToString();
+                        installationPath = key.GetValue(installPathKey)?.ToString();
                         if (Directory.Exists(installationPath))
                         {
                             return installationPath;
@@ -61,7 +78,7 @@ namespace GooglePlayGamesLibrary
 
                 // Fallback to default location if registry key is missing.
                 var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                installationPath = Path.Combine(programFiles, "Google", "Play Games");
+                installationPath = Path.Combine(programFiles, companyName, productName);
                 if (Directory.Exists(installationPath))
                 {
                     return installationPath;
@@ -76,7 +93,7 @@ namespace GooglePlayGamesLibrary
             get
             {
                 var installPath = InstallationPath;
-                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, "Bootstrapper.exe");
+                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, mainExecutableName + executableExtension);
             }
         }
 
@@ -85,7 +102,7 @@ namespace GooglePlayGamesLibrary
             get
             {
                 var installPath = InstallationPath;
-                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, "current", "service", "Service.exe");
+                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, @"current", @"service", ServiceExecutableName + executableExtension);
             }
         }
 
@@ -99,7 +116,7 @@ namespace GooglePlayGamesLibrary
             }
         }
 
-        public static string Icon => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "icon.png");
+        public static string Icon => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"icon.png");
 
         public static void StartClient()
         {
@@ -108,7 +125,7 @@ namespace GooglePlayGamesLibrary
 
         public static void ExitClient()
         {
-            ProcessStarter.StartProcessWait(MainExecutablePath, "/exit", InstallationPath);
+            ProcessStarter.StartProcessWait(MainExecutablePath, exitCommandLineArgument , InstallationPath);
         }
     }
 }

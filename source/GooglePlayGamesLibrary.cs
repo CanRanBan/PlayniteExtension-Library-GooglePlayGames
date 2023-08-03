@@ -16,7 +16,7 @@ namespace GooglePlayGamesLibrary
         public override Guid Id { get; } = Guid.Parse("fcd1bbc9-c3a3-499f-9a4c-8b7c9c8b9de8");
 
         // Addition of "on PC" for now because only games playable on PC and part of the emulator will be fetched.
-        public override string Name => "Google Play Games on PC Library";
+        public override string Name => GooglePlayGames.ApplicationName + @" on PC Library";
 
         // Implementing Client adds ability to open it via special menu in playnite.
         public override LibraryClient Client { get; } = new GooglePlayGamesLibraryClient(logger);
