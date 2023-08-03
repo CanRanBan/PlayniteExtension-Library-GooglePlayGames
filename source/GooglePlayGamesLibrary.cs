@@ -11,7 +11,7 @@ namespace GooglePlayGamesLibrary
     {
         private static readonly ILogger logger = LogManager.GetLogger();
 
-        private GooglePlayGamesLibrarySettingsViewModel settings { get; set; }
+        private GooglePlayGamesLibrarySettingsViewModel Settings { get; set; }
 
         public override Guid Id { get; } = Guid.Parse("fcd1bbc9-c3a3-499f-9a4c-8b7c9c8b9de8");
 
@@ -23,7 +23,7 @@ namespace GooglePlayGamesLibrary
 
         public GooglePlayGamesLibrary(IPlayniteAPI api) : base(api)
         {
-            settings = new GooglePlayGamesLibrarySettingsViewModel(this);
+            Settings = new GooglePlayGamesLibrarySettingsViewModel(this);
             Properties = new LibraryPluginProperties
             {
                 CanShutdownClient = true,
@@ -74,7 +74,7 @@ namespace GooglePlayGamesLibrary
 
         public override ISettings GetSettings(bool firstRunSettings)
         {
-            return settings;
+            return Settings;
         }
 
         public override UserControl GetSettingsView(bool firstRunSettings)
