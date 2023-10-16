@@ -22,10 +22,22 @@ namespace GooglePlayGamesLibrary
 
         private const string imageCacheFolder = @"image_cache";
 
+        private const string gameIconIdentifier = @".appicon";
+        private const string gameBackgroundIdentifier = @".background";
+        private const string gameLogoIdentifier = @".logo";
+
+        internal const string gameIconIdentifierTypeIcon = gameIconIdentifier + imageTypeIconExtension;
+        internal const string gameIconIdentifierTypePNG = gameIconIdentifier + imageTypePNGExtension;
+        internal const string gameBackgroundIdentifierTypePNG = gameBackgroundIdentifier + imageTypePNGExtension;
+        internal const string gameLogoIdentifierTypePNG = gameLogoIdentifier + imageTypePNGExtension;
+
         private const string mainExecutableName = @"Bootstrapper";
         public const string ServiceExecutableName = @"Service";
 
         private const string executableExtension = @".exe";
+
+        private const string imageTypeIconExtension = @".ico";
+        private const string imageTypePNGExtension = @".png";
 
         private const string exitCommandLineArgument = @"/exit";
 
