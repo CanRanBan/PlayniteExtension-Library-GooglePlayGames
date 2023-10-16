@@ -20,6 +20,8 @@ namespace GooglePlayGamesLibrary
         private const string dataPathKey = @"UserLocalAppDataRoot";
         private const string installPathKey = @"InstallFolder";
 
+        private const string imageCacheFolder = @"image_cache";
+
         private const string mainExecutableName = @"Bootstrapper";
         public const string ServiceExecutableName = @"Service";
 
@@ -82,6 +84,26 @@ namespace GooglePlayGamesLibrary
                 if (Directory.Exists(installationPath))
                 {
                     return installationPath;
+                }
+
+                return string.Empty;
+            }
+        }
+
+        public static string ImageCachePath
+        {
+            get
+            {
+                string imageCachePath;
+
+                var dataPath = DataPath;
+                if (!string.IsNullOrEmpty(dataPath))
+                {
+                    imageCachePath = Path.Combine(dataPath, imageCacheFolder);
+                    if (Directory.Exists(imageCachePath))
+                    {
+                        return imageCachePath;
+                    }
                 }
 
                 return string.Empty;
