@@ -18,7 +18,7 @@ namespace GooglePlayGamesLibrary
         // Addition of "on PC" for now because only games playable on PC and part of the emulator will be fetched.
         public override string Name => GooglePlayGames.ApplicationName + @" on PC Library";
 
-        // Implementing Client adds ability to open it via special menu in playnite.
+        // Implementing Client adds ability to open it via special menu in Playnite.
         public override LibraryClient Client { get; } = new GooglePlayGamesLibraryClient(logger);
 
         public GooglePlayGamesLibrary(IPlayniteAPI api) : base(api)
