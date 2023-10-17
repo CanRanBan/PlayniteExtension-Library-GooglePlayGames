@@ -22,6 +22,10 @@ namespace GooglePlayGamesLibrary
 
         private const string imageCacheFolder = @"image_cache";
 
+        private const string userDataFolderSearchPattern = @"userdata_*";
+        private const string userDataImageFolder = @"avd";
+        private const string userDataImageFile = @"userdata.img";
+
         private const string gameIconIdentifier = @".appicon";
         private const string gameBackgroundIdentifier = @".background";
         private const string gameLogoIdentifier = @".logo";
@@ -115,6 +119,32 @@ namespace GooglePlayGamesLibrary
                     if (Directory.Exists(imageCachePath))
                     {
                         return imageCachePath;
+                    }
+                }
+
+                return string.Empty;
+            }
+        }
+
+        public static string UserDataImagePath
+        {
+            get
+            {
+                var dataPath = DataPath;
+                if (!string.IsNullOrEmpty(dataPath))
+                {
+                    var userDataDirectory = Directory.GetDirectories(dataPath, userDataFolderSearchPattern, SearchOption.TopDirectoryOnly);
+                    if (userDataDirectory.Any())
+                    {
+                        var userDataFolder = userDataDirectory.FirstOrDefault();
+                        if (Directory.Exists(userDataFolder))
+                        {
+                            string userDataImagePath = Path.Combine(userDataFolder, userDataImageFolder, userDataImageFile);
+                            if (File.Exists(userDataImagePath))
+                            {
+                                return userDataImagePath;
+                            }
+                        }
                     }
                 }
 
