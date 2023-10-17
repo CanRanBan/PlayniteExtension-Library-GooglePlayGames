@@ -3,6 +3,8 @@ using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Controls;
 
 namespace GooglePlayGamesLibrary
@@ -29,6 +31,20 @@ namespace GooglePlayGamesLibrary
                 CanShutdownClient = true,
                 HasSettings = true
             };
+        }
+
+        private List<string> GetInstalledGamesIdentifiers()
+        {
+            var installedGamesImageCachePath = GooglePlayGames.ImageCachePath;
+
+            var gameBackgroundIdentifier = GooglePlayGames.GameBackgroundIdentifierTypePNG;
+            var searchPattern = @"*" + gameBackgroundIdentifier;
+
+            var installedGamesBackgroundList = Directory.GetFiles(installedGamesImageCachePath, searchPattern);
+
+            var installedGamesIdentifierList = installedGamesBackgroundList.Select(x => x.TrimEndString(gameBackgroundIdentifier, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            return installedGamesIdentifierList;
         }
 
         public override IEnumerable<GameMetadata> GetGames(LibraryGetGamesArgs args)
