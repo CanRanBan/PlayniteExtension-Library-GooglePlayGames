@@ -95,6 +95,7 @@
     <Compile Include="GooglePlayGamesLibrarySettingsView.xaml.cs">
       <DependentUpon>GooglePlayGamesLibrarySettingsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GooglePlayGamesLibraryMetadataProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

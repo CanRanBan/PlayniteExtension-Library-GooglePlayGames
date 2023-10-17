@@ -88,6 +88,11 @@ namespace GooglePlayGamesLibrary
             };
         }
 
+        public override LibraryMetadataProvider GetMetadataDownloader()
+        {
+            return new GooglePlayGamesLibraryMetadataProvider();
+        }
+
         public override ISettings GetSettings(bool firstRunSettings)
         {
             return Settings;
