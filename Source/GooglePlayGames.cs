@@ -28,7 +28,7 @@ namespace GooglePlayGamesLibrary
 
         internal const string gameIconIdentifierTypeIcon = gameIconIdentifier + imageTypeIconExtension;
         internal const string gameIconIdentifierTypePNG = gameIconIdentifier + imageTypePNGExtension;
-        internal const string gameBackgroundIdentifierTypePNG = gameBackgroundIdentifier + imageTypePNGExtension;
+        internal const string GameBackgroundIdentifierTypePNG = gameBackgroundIdentifier + imageTypePNGExtension;
         internal const string gameLogoIdentifierTypePNG = gameLogoIdentifier + imageTypePNGExtension;
 
         private const string mainExecutableName = @"Bootstrapper";
