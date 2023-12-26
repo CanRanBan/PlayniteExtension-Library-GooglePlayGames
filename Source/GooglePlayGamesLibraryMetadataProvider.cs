@@ -22,11 +22,11 @@ namespace GooglePlayGamesLibrary
             internal readonly string gameLogoTypePNG;
         }
 
-        public override GameMetadata GetMetadata(Game game)
+        internal GameMetadata GetMetadata(string gameIdentifier)
         {
             var gameMetadata = new GameMetadata();
 
-            var gameMetadataFileNames = new GameMetadataFileNames(game.GameId);
+            var gameMetadataFileNames = new GameMetadataFileNames(gameIdentifier);
 
             var iconPath = Path.Combine(GooglePlayGames.ImageCachePath, gameMetadataFileNames.gameIconTypeIcon);
             if (File.Exists(iconPath))
@@ -41,6 +41,11 @@ namespace GooglePlayGamesLibrary
             }
 
             return gameMetadata;
+        }
+
+        public override GameMetadata GetMetadata(Game game)
+        {
+            return GetMetadata(game.GameId);
         }
     }
 }
