@@ -10,6 +10,7 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 		ReleasePack|Any CPU = ReleasePack|Any CPU
+		ReleaseUpgrade|Any CPU = ReleaseUpgrade|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -18,6 +19,8 @@ Global
 		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}.ReleasePack|Any CPU.ActiveCfg = ReleasePack|Any CPU
 		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}.ReleasePack|Any CPU.Build.0 = ReleasePack|Any CPU
+		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}.ReleaseUpgrade|Any CPU.ActiveCfg = ReleaseUpgrade|Any CPU
+		{2351B5C1-6E28-4B79-A1D9-90FDA53B5417}.ReleaseUpgrade|Any CPU.Build.0 = ReleaseUpgrade|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
