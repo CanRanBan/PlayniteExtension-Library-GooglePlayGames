@@ -1,6 +1,7 @@
 ﻿using Playnite.Common;
 using Playnite.SDK;
 using System.Diagnostics;
+using System.Linq;
 
 namespace GooglePlayGamesLibrary
 {
@@ -28,7 +29,7 @@ namespace GooglePlayGamesLibrary
 
             var serviceProcessList = Process.GetProcessesByName(serviceExecutableName);
 
-            if (serviceProcessList == null)
+            if (!serviceProcessList.Any())
             {
                 var applicationName = GooglePlayGames.ApplicationName;
 
