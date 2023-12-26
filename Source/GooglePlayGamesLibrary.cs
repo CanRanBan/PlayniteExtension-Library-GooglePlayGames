@@ -33,7 +33,7 @@ namespace GooglePlayGamesLibrary
             };
         }
 
-        private List<string> GetInstalledGamesIdentifiers()
+        private static List<string> GetInstalledGamesIdentifiers()
         {
             var installedGamesImageCachePath = GooglePlayGames.ImageCachePath;
 
@@ -47,45 +47,82 @@ namespace GooglePlayGamesLibrary
             return installedGamesIdentifierList;
         }
 
+        internal static List<GameMetadata> GetInstalledGames()
+        {
+            var installedGames = new List<GameMetadata>();
+
+            var installedGamesIdentifiers = GetInstalledGamesIdentifiers();
+
+            var libraryMetadataProvider = new GooglePlayGamesLibraryMetadataProvider();
+
+            foreach (var gameIdentifier in installedGamesIdentifiers)
+            {
+                var newGameMedia = libraryMetadataProvider.GetMetadata(gameIdentifier);
+
+                var newGame = new GameMetadata
+                {
+                    GameId = gameIdentifier,
+                    Name = gameIdentifier,
+                    Icon = newGameMedia.Icon,
+                    BackgroundImage = newGameMedia.BackgroundImage,
+                    IsInstalled = true,
+                    Platforms = new HashSet<MetadataProperty> { new MetadataSpecProperty("pc_windows") },
+                    Source = new MetadataNameProperty(GooglePlayGames.ApplicationName),
+                    InstallDirectory = GooglePlayGames.UserDataImagePath
+                };
+
+                installedGames.Add(newGame);
+            }
+
+            return installedGames;
+        }
+
         public override IEnumerable<GameMetadata> GetGames(LibraryGetGamesArgs args)
         {
-            // Return list of user's games.
-            return new List<GameMetadata>()
+            var games = new List<GameMetadata>();
+
+            var applicationName = GooglePlayGames.ApplicationName;
+
+            var importErrorIdentifier = "GooglePlayGamesImportError";
+
+            if (!GooglePlayGames.IsInstalled)
             {
-                new GameMetadata()
+                var installationNotFound = applicationName + " installation not found.";
+                PlayniteApi.Notifications.Add("GooglePlayGamesNotInstalled", installationNotFound, NotificationType.Error);
+                logger.Error(installationNotFound);
+                return games;
+            }
+
+            Exception importError = null;
+
+            try
+            {
+                var installedGames = GetInstalledGames();
+                if (installedGames.Any())
                 {
-                    Name = "Notepad",
-                    GameId = "notepad",
-                    GameActions = new List<GameAction>
-                    {
-                        new GameAction()
-                        {
-                            Type = GameActionType.File,
-                            Path = "notepad.exe",
-                            IsPlayAction = true
-                        }
-                    },
-                    IsInstalled = true,
-                    Icon = new MetadataFile(@"c:\Windows\notepad.exe")
-                },
-                new GameMetadata()
-                {
-                    Name = "Calculator",
-                    GameId = "calc",
-                    GameActions = new List<GameAction>
-                    {
-                        new GameAction()
-                        {
-                            Type = GameActionType.File,
-                            Path = "calc.exe",
-                            IsPlayAction = true
-                        }
-                    },
-                    IsInstalled = true,
-                    Icon = new MetadataFile(@"https://playnite.link/applogo.png"),
-                    BackgroundImage = new MetadataFile(@"https://playnite.link/applogo.png")
+                    games.AddRange(installedGames);
                 }
-            };
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Failed to import games from: " + applicationName);
+                importError = e;
+            }
+
+            if (importError != null)
+            {
+                PlayniteApi.Notifications.Add(importErrorIdentifier,
+                                              string.Format(PlayniteApi.Resources.GetString("LOCLibraryImportError"), applicationName) +
+                                              Environment.NewLine +
+                                              importError.Message,
+                                              NotificationType.Error);
+            }
+            else
+            {
+                PlayniteApi.Notifications.Remove(importErrorIdentifier);
+            }
+
+            return games;
         }
 
         public override LibraryMetadataProvider GetMetadataDownloader()
