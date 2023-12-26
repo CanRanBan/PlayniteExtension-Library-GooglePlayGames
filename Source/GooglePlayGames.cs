@@ -110,12 +110,10 @@ namespace GooglePlayGamesLibrary
         {
             get
             {
-                string imageCachePath;
-
                 var dataPath = DataPath;
                 if (!string.IsNullOrEmpty(dataPath))
                 {
-                    imageCachePath = Path.Combine(dataPath, imageCacheFolder);
+                    string imageCachePath = Path.Combine(dataPath, imageCacheFolder);
                     if (Directory.Exists(imageCachePath))
                     {
                         return imageCachePath;
