@@ -36,7 +36,7 @@ namespace GooglePlayGamesLibrary
         internal const string gameLogoIdentifierTypePNG = gameLogoIdentifier + imageTypePNGExtension;
 
         private const string mainExecutableName = @"Bootstrapper";
-        public const string ServiceExecutableName = @"Service";
+        internal const string ServiceExecutableName = @"Service";
 
         private const string executableExtension = @".exe";
 
