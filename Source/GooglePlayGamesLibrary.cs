@@ -73,7 +73,7 @@ namespace GooglePlayGamesLibrary
                     IsInstalled = true,
                     Platforms = new HashSet<MetadataProperty> { new MetadataSpecProperty("pc_windows") },
                     Source = new MetadataNameProperty(GooglePlayGames.ApplicationName),
-                    InstallDirectory = GooglePlayGames.UserDataImagePath
+                    InstallDirectory = GooglePlayGames.UserDataImageFolderPath
                 };
 
                 installedGames.Add(newGame);

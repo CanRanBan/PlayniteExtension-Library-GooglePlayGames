@@ -124,6 +124,32 @@ namespace GooglePlayGamesLibrary
             }
         }
 
+        public static string UserDataImageFolderPath
+        {
+            get
+            {
+                var dataPath = DataPath;
+                if (!string.IsNullOrEmpty(dataPath))
+                {
+                    var userDataDirectory = Directory.GetDirectories(dataPath, userDataFolderSearchPattern, SearchOption.TopDirectoryOnly);
+                    if (userDataDirectory.Any())
+                    {
+                        var userDataFolder = userDataDirectory.FirstOrDefault();
+                        if (Directory.Exists(userDataFolder))
+                        {
+                            string userDataImageFolderPath = Path.Combine(userDataFolder, userDataImageFolder);
+                            if (Directory.Exists(userDataImageFolderPath))
+                            {
+                                return userDataImageFolderPath;
+                            }
+                        }
+                    }
+                }
+
+                return string.Empty;
+            }
+        }
+
         public static string UserDataImagePath
         {
             get
