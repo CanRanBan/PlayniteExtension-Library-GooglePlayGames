@@ -187,7 +187,7 @@ namespace GooglePlayGamesLibrary
 
         public static void ExitClient()
         {
-            ProcessStarter.StartProcessWait(MainExecutablePath, exitCommandLineArgument , InstallationPath);
+            ProcessStarter.StartProcessWait(MainExecutablePath, exitCommandLineArgument, InstallationPath);
         }
     }
 }
