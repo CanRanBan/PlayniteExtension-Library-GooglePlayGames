@@ -1,0 +1,47 @@
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Release Build
+
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup Nuget.exe
+        uses: NuGet/setup-nuget@v1
+
+      - name: Nuget Restore 
+        run: nuget restore ".\Google Play Games - Library.sln"
+
+      - name: Build (DotNET4.6.2)
+        run: |
+           cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
+           .\MSBuild.exe "${{ github.workspace }}\Google Play Games - Library.sln" -p:Configuration=Release -restore
+
+      - name: Setup Playnite
+        run: |
+           Invoke-WebRequest -Uri "https://github.com/JosefNemec/Playnite/releases/download/10.32/Playnite1032.zip" -OutFile "${{ github.workspace }}\Playnite.zip"
+           Expand-Archive "${{ github.workspace }}\Playnite.zip" -DestinationPath "${{ github.workspace }}\Playnite"
+
+      - name: Pack with Playnite
+        run: |
+           cd "${{ github.workspace }}\Playnite"
+           .\Toolbox.exe pack "${{ github.workspace }}\Source\bin\Release\" "${{ github.workspace }}\Toolbox\"
+           cd "${{ github.workspace }}\Toolbox"
+           Get-ChildItem -Filter *.pext | Rename-Item -NewName "CanRanBan_Library_GooglePlayGames_${{ github.ref_name }}.pext"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          prerelease: false
+          files: |
+            *.pext
