@@ -1,7 +1,18 @@
-﻿Id: CanRanBan_Library_GooglePlayGames
+Id: CanRanBan_Library_GooglePlayGames
 Name: Google Play Games on PC Library
 Author: CanRanBan
 Version: 0.1
 Module: GooglePlayGamesLibrary.dll
 Type: GameLibrary
 Icon: Resources\GooglePlayGamesLibraryIcon.ico
+Links:
+  - Name: GitHub (Source code)
+    Url: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames
+  - Name: Wiki (Introduction and Help)
+    Url: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/wiki
+  - Name: Google Play Games
+    Url: https://play.google.com/googleplaygames
+  - Name: Playnite Discord (#extensions-support)
+    Url: https://discord.com/channels/365863063296933888/808419165311467630
+  - Name: Issues (Feature requests and Bugs)
+    Url: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/issues
