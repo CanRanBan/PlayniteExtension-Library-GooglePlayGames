@@ -34,7 +34,6 @@ namespace GooglePlayGamesLibrary
                 var applicationName = GooglePlayGames.ApplicationName;
 
                 logger.Info(applicationName + @"is no longer running, not necessary to exit client.");
-                return;
             }
             else
             {
