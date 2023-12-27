@@ -41,7 +41,7 @@ namespace GooglePlayGamesLibrary
 
                 foreach (var serviceProcess in serviceProcessList)
                 {
-                    var processPath = serviceProcess.MainModule.FileName;
+                    var processPath = serviceProcess.MainModule?.FileName;
                     if (Paths.AreEqual(servicePath, processPath))
                     {
                         GooglePlayGames.ExitClient();
