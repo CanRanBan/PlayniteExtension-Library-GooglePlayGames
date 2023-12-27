@@ -178,7 +178,7 @@ namespace GooglePlayGamesLibrary
             }
         }
 
-        public static string Icon => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources", @"GooglePlayGamesLibraryIcon.png");
+        public static string Icon => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources", @"GooglePlayGamesLibraryIcon.ico");
 
         public static void StartClient()
         {
