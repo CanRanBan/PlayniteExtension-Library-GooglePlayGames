@@ -5,4 +5,4 @@ Packages:
     ReleaseDate: 2023-12-27
     PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.1/CanRanBan_Library_GooglePlayGames_v0.1.pext
     Changelog:
-      - 'Initial alpha release of "Google Play Games on PC Library". Currently available features: Import of installed games, launch of "Google Play Games (Beta)".'
+      - 'Initial alpha release of "Google Play Games on PC Library". Currently available features: Import of installed games, launch of "Google Play Games (Beta)" application.'
