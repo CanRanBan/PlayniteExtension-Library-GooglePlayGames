@@ -17,7 +17,7 @@ jobs:
       - name: Setup Nuget.exe
         uses: NuGet/setup-nuget@v1
 
-      - name: Nuget Restore 
+      - name: Nuget Restore
         run: nuget restore ".\Google Play Games - Library.sln"
 
       - name: Build (DotNET4.6.2)
@@ -44,4 +44,4 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            *.pext
+            Toolbox/*.pext
