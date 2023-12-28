@@ -15,7 +15,7 @@ namespace GooglePlayGamesLibrary
 
         public const string ApplicationName = companyName + @" " + productName;
 
-        private const string registryFolder = @"Software\" + companyName + @"\" + productName;
+        private const string registryFolder = @"SOFTWARE\" + companyName + @"\" + productName;
 
         private const string dataPathKey = @"UserLocalAppDataRoot";
         private const string installPathKey = @"InstallFolder";
