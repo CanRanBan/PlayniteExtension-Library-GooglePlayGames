@@ -1,3 +1,4 @@
 [submodule "Include/PlayniteCustom"]
 	path = Include/Playnite
 	url = https://github.com/CanRanBan/PlayniteFork.git
+	branch = main
