@@ -56,10 +56,13 @@ namespace GooglePlayGamesLibrary
                     if (key?.GetValueNames().Contains(dataPathKey) == true)
                     {
                         var rootPath = key.GetValue(dataPathKey)?.ToString();
-                        dataPath = Path.Combine(rootPath, companyName, productName);
-                        if (Directory.Exists(dataPath))
+                        if (!string.IsNullOrEmpty(rootPath))
                         {
-                            return dataPath;
+                            dataPath = Path.Combine(rootPath, companyName, productName);
+                            if (Directory.Exists(dataPath))
+                            {
+                                return dataPath;
+                            }
                         }
                     }
                 }
