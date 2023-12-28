@@ -98,8 +98,9 @@ namespace GooglePlayGamesLibrary
             if (!GooglePlayGames.IsInstalled)
             {
                 var installationNotFound = applicationName + " installation not found.";
-                PlayniteApi.Notifications.Add("GooglePlayGamesNotInstalled", installationNotFound, NotificationType.Error);
+                playniteAPI.Notifications.Add("GooglePlayGamesNotInstalled", installationNotFound, NotificationType.Error);
                 logger.Error(installationNotFound);
+
                 return games;
             }
 
@@ -121,15 +122,15 @@ namespace GooglePlayGamesLibrary
 
             if (importError != null)
             {
-                PlayniteApi.Notifications.Add(importErrorIdentifier,
-                                              string.Format(PlayniteApi.Resources.GetString("LOCLibraryImportError"), applicationName) +
+                playniteAPI.Notifications.Add(importErrorIdentifier,
+                                              string.Format(playniteAPI.Resources.GetString("LOCLibraryImportError"), applicationName) +
                                               Environment.NewLine +
                                               importError.Message,
                                               NotificationType.Error);
             }
             else
             {
-                PlayniteApi.Notifications.Remove(importErrorIdentifier);
+                playniteAPI.Notifications.Remove(importErrorIdentifier);
             }
 
             return games;
