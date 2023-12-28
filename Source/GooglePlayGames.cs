@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace GooglePlayGamesLibrary
 {
-    internal class GooglePlayGames
+    internal static class GooglePlayGames
     {
         private const string companyName = @"Google";
         private const string productName = @"Play Games";
