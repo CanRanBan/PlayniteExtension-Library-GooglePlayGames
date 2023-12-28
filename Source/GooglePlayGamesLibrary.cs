@@ -13,6 +13,8 @@ namespace GooglePlayGamesLibrary
     {
         private static readonly ILogger logger = LogManager.GetLogger();
 
+        private static IPlayniteAPI playniteAPI;
+
         private GooglePlayGamesLibrarySettingsViewModel Settings { get; set; }
 
         public override Guid Id { get; } = Guid.Parse("fcd1bbc9-c3a3-499f-9a4c-8b7c9c8b9de8");
@@ -27,6 +29,9 @@ namespace GooglePlayGamesLibrary
 
         public GooglePlayGamesLibrary(IPlayniteAPI api) : base(api)
         {
+            // Use injected API instance.
+            playniteAPI = api;
+
             Settings = new GooglePlayGamesLibrarySettingsViewModel(this);
             Properties = new LibraryPluginProperties
             {
@@ -37,17 +42,25 @@ namespace GooglePlayGamesLibrary
 
         private static List<string> GetInstalledGamesIdentifiers()
         {
+            var installedGamesIdentifierList = new List<string>();
+
             var installedGamesImageCachePath = GooglePlayGames.ImageCachePath;
 
-            var gameBackgroundIdentifier = GooglePlayGames.GameBackgroundIdentifierTypePNG;
-            var searchPattern = @"*" + gameBackgroundIdentifier;
+            if (!string.IsNullOrEmpty(installedGamesImageCachePath))
+            {
+                var gameBackgroundIdentifier = GooglePlayGames.GameBackgroundIdentifierTypePNG;
+                var searchPattern = @"*" + gameBackgroundIdentifier;
 
-            var installedGamesBackgroundList = Directory.GetFiles(installedGamesImageCachePath, searchPattern);
+                var installedGamesBackgroundList = Directory.GetFiles(installedGamesImageCachePath, searchPattern);
 
-            var installedGamesBackgroundListFileNames =
-                installedGamesBackgroundList.Select(Path.GetFileName);
+                var installedGamesBackgroundListFileNames =
+                    installedGamesBackgroundList.Select(Path.GetFileName);
 
-            var installedGamesIdentifierList = installedGamesBackgroundListFileNames.Select(x => x.TrimEndString(gameBackgroundIdentifier, StringComparison.OrdinalIgnoreCase)).ToList();
+                installedGamesIdentifierList = installedGamesBackgroundListFileNames
+                                              .Select(x => x.TrimEndString(gameBackgroundIdentifier,
+                                                                           StringComparison.OrdinalIgnoreCase))
+                                              .ToList();
+            }
 
             return installedGamesIdentifierList;
         }
@@ -56,7 +69,20 @@ namespace GooglePlayGamesLibrary
         {
             var installedGames = new List<GameMetadata>();
 
+            var applicationName = GooglePlayGames.ApplicationName;
+
+            var noGamesInstalledIdentifier = "GooglePlayGamesNoGamesInstalled";
+
             var installedGamesIdentifiers = GetInstalledGamesIdentifiers();
+
+            if (!installedGamesIdentifiers.Any())
+            {
+                var noGamesInstalled = "No installed games found for " + applicationName + ".";
+                playniteAPI.Notifications.Add(noGamesInstalledIdentifier, noGamesInstalled, NotificationType.Info);
+                logger.Info(noGamesInstalled);
+
+                return installedGames;
+            }
 
             var libraryMetadataProvider = new GooglePlayGamesLibraryMetadataProvider();
 
@@ -72,12 +98,14 @@ namespace GooglePlayGamesLibrary
                     BackgroundImage = newGameMedia.BackgroundImage,
                     IsInstalled = true,
                     Platforms = new HashSet<MetadataProperty> { new MetadataSpecProperty("pc_windows") },
-                    Source = new MetadataNameProperty(GooglePlayGames.ApplicationName),
+                    Source = new MetadataNameProperty(applicationName),
                     InstallDirectory = GooglePlayGames.UserDataImageFolderPath
                 };
 
                 installedGames.Add(newGame);
             }
+
+            playniteAPI.Notifications.Remove(noGamesInstalledIdentifier);
 
             return installedGames;
         }
@@ -88,15 +116,19 @@ namespace GooglePlayGamesLibrary
 
             var applicationName = GooglePlayGames.ApplicationName;
 
+            var notInstalledIdentifier = "GooglePlayGamesNotInstalled";
             var importErrorIdentifier = "GooglePlayGamesImportError";
 
             if (!GooglePlayGames.IsInstalled)
             {
                 var installationNotFound = applicationName + " installation not found.";
-                PlayniteApi.Notifications.Add("GooglePlayGamesNotInstalled", installationNotFound, NotificationType.Error);
+                playniteAPI.Notifications.Add(notInstalledIdentifier, installationNotFound, NotificationType.Error);
                 logger.Error(installationNotFound);
+
                 return games;
             }
+
+            playniteAPI.Notifications.Remove(notInstalledIdentifier);
 
             Exception importError = null;
 
@@ -110,21 +142,21 @@ namespace GooglePlayGamesLibrary
             }
             catch (Exception e)
             {
-                logger.Error(e, "Failed to import games from: " + applicationName);
+                logger.Error(e, "Failed to import games from " + applicationName + ".");
                 importError = e;
             }
 
             if (importError != null)
             {
-                PlayniteApi.Notifications.Add(importErrorIdentifier,
-                                              string.Format(PlayniteApi.Resources.GetString("LOCLibraryImportError"), applicationName) +
+                playniteAPI.Notifications.Add(importErrorIdentifier,
+                                              string.Format(playniteAPI.Resources.GetString("LOCLibraryImportError"), applicationName) +
                                               Environment.NewLine +
                                               importError.Message,
                                               NotificationType.Error);
             }
             else
             {
-                PlayniteApi.Notifications.Remove(importErrorIdentifier);
+                playniteAPI.Notifications.Remove(importErrorIdentifier);
             }
 
             return games;
