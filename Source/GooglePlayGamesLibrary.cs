@@ -116,16 +116,19 @@ namespace GooglePlayGamesLibrary
 
             var applicationName = GooglePlayGames.ApplicationName;
 
+            var notInstalledIdentifier = "GooglePlayGamesNotInstalled";
             var importErrorIdentifier = "GooglePlayGamesImportError";
 
             if (!GooglePlayGames.IsInstalled)
             {
                 var installationNotFound = applicationName + " installation not found.";
-                playniteAPI.Notifications.Add("GooglePlayGamesNotInstalled", installationNotFound, NotificationType.Error);
+                playniteAPI.Notifications.Add(notInstalledIdentifier, installationNotFound, NotificationType.Error);
                 logger.Error(installationNotFound);
 
                 return games;
             }
+
+            playniteAPI.Notifications.Remove(notInstalledIdentifier);
 
             Exception importError = null;
 
