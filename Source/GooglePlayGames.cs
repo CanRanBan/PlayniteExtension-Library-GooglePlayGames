@@ -51,17 +51,46 @@ namespace GooglePlayGamesLibrary
             {
                 string dataPath;
 
-                using (var key = Registry.LocalMachine.OpenSubKey(registryFolder))
+                // Retrieve registry view matching operating system architecture (64-Bit or 32-Bit).
+                if (Environment.Is64BitOperatingSystem)
                 {
-                    if (key?.GetValueNames().Contains(dataPathKey) == true)
+                    using (var registryKeyLocalMachine =
+                           RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
                     {
-                        var rootPath = key.GetValue(dataPathKey)?.ToString();
-                        if (!string.IsNullOrEmpty(rootPath))
+                        using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
                         {
-                            dataPath = Path.Combine(rootPath, companyName, productName);
-                            if (Directory.Exists(dataPath))
+                            if (key?.GetValueNames().Contains(dataPathKey) == true)
                             {
-                                return dataPath;
+                                var rootPath = key.GetValue(dataPathKey)?.ToString();
+                                if (!string.IsNullOrEmpty(rootPath))
+                                {
+                                    dataPath = Path.Combine(rootPath, companyName, productName);
+                                    if (Directory.Exists(dataPath))
+                                    {
+                                        return dataPath;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Additionally check 32-Bit view on 64-Bit OS if not found in 64-Bit part.
+                using (var registryKeyLocalMachine =
+                       RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
+                {
+                    using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
+                    {
+                        if (key?.GetValueNames().Contains(dataPathKey) == true)
+                        {
+                            var rootPath = key.GetValue(dataPathKey)?.ToString();
+                            if (!string.IsNullOrEmpty(rootPath))
+                            {
+                                dataPath = Path.Combine(rootPath, companyName, productName);
+                                if (Directory.Exists(dataPath))
+                                {
+                                    return dataPath;
+                                }
                             }
                         }
                     }
@@ -85,14 +114,39 @@ namespace GooglePlayGamesLibrary
             {
                 string installationPath;
 
-                using (var key = Registry.LocalMachine.OpenSubKey(registryFolder))
+                // Retrieve registry view matching operating system architecture (64-Bit or 32-Bit).
+                if (Environment.Is64BitOperatingSystem)
                 {
-                    if (key?.GetValueNames().Contains(installPathKey) == true)
+                    using (var registryKeyLocalMachine =
+                           RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
                     {
-                        installationPath = key.GetValue(installPathKey)?.ToString();
-                        if (Directory.Exists(installationPath))
+                        using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
                         {
-                            return installationPath;
+                            if (key?.GetValueNames().Contains(installPathKey) == true)
+                            {
+                                installationPath = key.GetValue(installPathKey)?.ToString();
+                                if (Directory.Exists(installationPath))
+                                {
+                                    return installationPath;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Additionally check 32-Bit view on 64-Bit OS if not found in 64-Bit part.
+                using (var registryKeyLocalMachine =
+                       RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
+                {
+                    using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
+                    {
+                        if (key?.GetValueNames().Contains(installPathKey) == true)
+                        {
+                            installationPath = key.GetValue(installPathKey)?.ToString();
+                            if (Directory.Exists(installationPath))
+                            {
+                                return installationPath;
+                            }
                         }
                     }
                 }
@@ -103,6 +157,18 @@ namespace GooglePlayGamesLibrary
                 if (Directory.Exists(installationPath))
                 {
                     return installationPath;
+                }
+
+                // Additionally check 32-Bit folder on 64-Bit OS if not found in 64-Bit part.
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                    installationPath = Path.Combine(programFiles, companyName, productName);
+
+                    if (Directory.Exists(installationPath))
+                    {
+                        return installationPath;
+                    }
                 }
 
                 return string.Empty;
