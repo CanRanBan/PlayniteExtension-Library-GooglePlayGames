@@ -142,7 +142,7 @@ namespace GooglePlayGamesLibrary
             }
             catch (Exception e)
             {
-                logger.Error(e, "Failed to import games from " + applicationName);
+                logger.Error(e, "Failed to import games from " + applicationName + ".");
                 importError = e;
             }
 
