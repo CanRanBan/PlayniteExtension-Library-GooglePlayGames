@@ -42,17 +42,25 @@ namespace GooglePlayGamesLibrary
 
         private static List<string> GetInstalledGamesIdentifiers()
         {
+            var installedGamesIdentifierList = new List<string>();
+
             var installedGamesImageCachePath = GooglePlayGames.ImageCachePath;
 
-            var gameBackgroundIdentifier = GooglePlayGames.GameBackgroundIdentifierTypePNG;
-            var searchPattern = @"*" + gameBackgroundIdentifier;
+            if (!string.IsNullOrEmpty(installedGamesImageCachePath))
+            {
+                var gameBackgroundIdentifier = GooglePlayGames.GameBackgroundIdentifierTypePNG;
+                var searchPattern = @"*" + gameBackgroundIdentifier;
 
-            var installedGamesBackgroundList = Directory.GetFiles(installedGamesImageCachePath, searchPattern);
+                var installedGamesBackgroundList = Directory.GetFiles(installedGamesImageCachePath, searchPattern);
 
-            var installedGamesBackgroundListFileNames =
-                installedGamesBackgroundList.Select(Path.GetFileName);
+                var installedGamesBackgroundListFileNames =
+                    installedGamesBackgroundList.Select(Path.GetFileName);
 
-            var installedGamesIdentifierList = installedGamesBackgroundListFileNames.Select(x => x.TrimEndString(gameBackgroundIdentifier, StringComparison.OrdinalIgnoreCase)).ToList();
+                installedGamesIdentifierList = installedGamesBackgroundListFileNames
+                                              .Select(x => x.TrimEndString(gameBackgroundIdentifier,
+                                                                           StringComparison.OrdinalIgnoreCase))
+                                              .ToList();
+            }
 
             return installedGamesIdentifierList;
         }
