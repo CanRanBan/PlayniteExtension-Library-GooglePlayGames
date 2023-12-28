@@ -12,3 +12,11 @@ Packages:
     PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.1.1/CanRanBan_Library_GooglePlayGames_v0.1.1.pext
     Changelog:
       - 'Use folder instead of image file for installation path.'
+  - Version: 0.1.2
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2023-12-28
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.1.2/CanRanBan_Library_GooglePlayGames_v0.1.2.pext
+    Changelog:
+      - 'Improve installation check of Google Play Games to prevent unexpected installation not found notifications.'
+      - 'Add notification if no games are installed.'
+      - 'Remove notifications after underlying issue was resolved.'
