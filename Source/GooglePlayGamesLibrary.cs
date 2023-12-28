@@ -69,7 +69,20 @@ namespace GooglePlayGamesLibrary
         {
             var installedGames = new List<GameMetadata>();
 
+            var applicationName = GooglePlayGames.ApplicationName;
+
+            var noGamesInstalledIdentifier = "GooglePlayGamesNoGamesInstalled";
+
             var installedGamesIdentifiers = GetInstalledGamesIdentifiers();
+
+            if (!installedGamesIdentifiers.Any())
+            {
+                var noGamesInstalled = "No installed games found for " + applicationName + ".";
+                playniteAPI.Notifications.Add(noGamesInstalledIdentifier, noGamesInstalled, NotificationType.Info);
+                logger.Info(noGamesInstalled);
+
+                return installedGames;
+            }
 
             var libraryMetadataProvider = new GooglePlayGamesLibraryMetadataProvider();
 
@@ -85,12 +98,14 @@ namespace GooglePlayGamesLibrary
                     BackgroundImage = newGameMedia.BackgroundImage,
                     IsInstalled = true,
                     Platforms = new HashSet<MetadataProperty> { new MetadataSpecProperty("pc_windows") },
-                    Source = new MetadataNameProperty(GooglePlayGames.ApplicationName),
+                    Source = new MetadataNameProperty(applicationName),
                     InstallDirectory = GooglePlayGames.UserDataImageFolderPath
                 };
 
                 installedGames.Add(newGame);
             }
+
+            playniteAPI.Notifications.Remove(noGamesInstalledIdentifier);
 
             return installedGames;
         }
