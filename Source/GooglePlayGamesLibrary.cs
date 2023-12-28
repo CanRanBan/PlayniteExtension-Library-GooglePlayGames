@@ -13,6 +13,8 @@ namespace GooglePlayGamesLibrary
     {
         private static readonly ILogger logger = LogManager.GetLogger();
 
+        private static IPlayniteAPI playniteAPI;
+
         private GooglePlayGamesLibrarySettingsViewModel Settings { get; set; }
 
         public override Guid Id { get; } = Guid.Parse("fcd1bbc9-c3a3-499f-9a4c-8b7c9c8b9de8");
@@ -27,6 +29,9 @@ namespace GooglePlayGamesLibrary
 
         public GooglePlayGamesLibrary(IPlayniteAPI api) : base(api)
         {
+            // Use injected API instance.
+            playniteAPI = api;
+
             Settings = new GooglePlayGamesLibrarySettingsViewModel(this);
             Properties = new LibraryPluginProperties
             {
