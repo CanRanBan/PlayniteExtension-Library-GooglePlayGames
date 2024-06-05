@@ -263,6 +263,23 @@ namespace GooglePlayGamesLibrary
             }
         }
 
+        public static string ShortcutsPath
+        {
+            get
+            {
+                string shortcutsPath;
+
+                var roaming = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                shortcutsPath = Path.Combine(roaming, @"Microsoft", @"Windows", @"Start Menu", @"Programs", ApplicationName);
+                if (Directory.Exists(shortcutsPath))
+                {
+                    return shortcutsPath;
+                }
+
+                return string.Empty;
+            }
+        }
+
         public static bool IsInstalled
         {
             get
