@@ -220,6 +220,16 @@ namespace GooglePlayGamesLibrary
             return games;
         }
 
+        public override IEnumerable<PlayController> GetPlayActions(GetPlayActionsArgs args)
+        {
+            if (args.Game.PluginId != Id)
+            {
+                yield break;
+            }
+
+            yield return new GooglePlayGamesLibraryPlayController(logger, playniteAPI, args.Game);
+        }
+
         public override LibraryMetadataProvider GetMetadataDownloader()
         {
             return new GooglePlayGamesLibraryMetadataProvider();

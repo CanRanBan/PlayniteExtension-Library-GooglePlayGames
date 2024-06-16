@@ -44,6 +44,8 @@ namespace GooglePlayGamesLibrary
         private const string imageTypeIconExtension = @".ico";
         private const string imageTypePNGExtension = @".png";
 
+        public const string StartWithClient = @"Start game with " + ApplicationName + @".";
+
         internal const string shortcutRemoveNullCharactersRegex = @"\0";
         internal const string shortcutRemoveControlCharactersAndUnicodeRegex = @"[^\u0020-\u007E]";
         internal const string shortcutMatchRegex = @"(?:.+)(googleplaygames://launch/\?id=)(.+)(&lid=\d+&pid=\d+)(?:\s)(.+?)(?:\s\,\s.+)";
