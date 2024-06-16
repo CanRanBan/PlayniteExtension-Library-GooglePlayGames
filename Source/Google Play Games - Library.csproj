@@ -105,6 +105,7 @@
       <DependentUpon>GooglePlayGamesLibrarySettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="GooglePlayGamesLibraryMetadataProvider.cs" />
+    <Compile Include="Helper\ProcessNameMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
