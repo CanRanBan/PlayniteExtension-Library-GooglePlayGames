@@ -37,6 +37,7 @@ namespace GooglePlayGamesLibrary
 
         private const string mainExecutableName = @"Bootstrapper";
         internal const string ServiceExecutableName = @"Service";
+        internal const string EmulatorExecutableName = @"crosvm";
 
         private const string executableExtension = @".exe";
 
@@ -263,6 +264,15 @@ namespace GooglePlayGamesLibrary
             }
         }
 
+        public static string EmulatorExecutablePath
+        {
+            get
+            {
+                var installPath = InstallationPath;
+                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, @"current", @"emulator", EmulatorExecutableName + executableExtension);
+            }
+        }
+
         public static string ShortcutsPath
         {
             get
@@ -286,7 +296,9 @@ namespace GooglePlayGamesLibrary
             {
                 var mainPath = MainExecutablePath;
                 var servicePath = ServiceExecutablePath;
-                return !string.IsNullOrEmpty(mainPath) && !string.IsNullOrEmpty(servicePath) && File.Exists(mainPath) && File.Exists(servicePath);
+                var emulatorPath = EmulatorExecutablePath;
+                return !string.IsNullOrEmpty(mainPath) && !string.IsNullOrEmpty(servicePath) && !string.IsNullOrEmpty(emulatorPath)
+                    && File.Exists(mainPath) && File.Exists(servicePath) && File.Exists(emulatorPath);
             }
         }
 
