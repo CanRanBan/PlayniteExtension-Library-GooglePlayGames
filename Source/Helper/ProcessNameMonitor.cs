@@ -16,12 +16,12 @@ namespace GooglePlayGamesLibrary.Helper
         private readonly ILogger logger;
         private readonly IPlayniteAPI playniteAPI;
 
-        #region Threading variables
+        #region ThreadingVariables
         private readonly SynchronizationContext processNameMonitorContext;
         private CancellationTokenSource processNameMonitorToken;
-        #endregion Threading variables
+        #endregion ThreadingVariables
 
-        #region Event handling
+        #region EventHandling
         internal class MonitoringStartedEventArgs
         {
             internal int GameProcessID { get; set; }
@@ -29,7 +29,7 @@ namespace GooglePlayGamesLibrary.Helper
 
         internal event EventHandler<MonitoringStartedEventArgs> MonitoringStarted;
         internal event EventHandler MonitoringStopped;
-        #endregion Event handling
+        #endregion EventHandling
 
         internal ProcessNameMonitor(ILogger logger, IPlayniteAPI playniteAPI)
         {
@@ -54,7 +54,7 @@ namespace GooglePlayGamesLibrary.Helper
 
         internal async void StartMonitoring(string gameName, int trackingDelay = 2000, int trackingStartDelay = 0)
         {
-            #region Required parameter check
+            #region RequiredParameterCheck
             var gameNameMissingIdentifier = "GooglePlayGamesGameNameMissing";
 
             if (string.IsNullOrEmpty(gameName))
@@ -67,7 +67,7 @@ namespace GooglePlayGamesLibrary.Helper
             }
 
             playniteAPI.Notifications.Remove(gameNameMissingIdentifier);
-            #endregion Required parameter check
+            #endregion RequiredParameterCheck
 
             processNameMonitorToken = new CancellationTokenSource();
 
