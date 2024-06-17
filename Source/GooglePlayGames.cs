@@ -49,7 +49,7 @@ namespace GooglePlayGamesLibrary
         internal const string shortcutRemoveNullCharactersRegex = @"\0";
         internal const string shortcutRemoveControlCharactersAndUnicodeRegex = @"[^\u0020-\u007E]";
         internal const string shortcutMatchGameStartURLRegex = @"(?:.+)(googleplaygames://launch/\?id=)(.+)(&lid=\d+&pid=\d+)(?:.+)";
-        internal const string shortcutMatchGameNameRegex = @"(?:.*„)(.+)(?:“\,\s.+)";
+        internal const string shortcutMatchGameNameRegex = @"(?:\S)(.+)(?:\S\,\s.+)";
 
         private const string exitCommandLineArgument = @"/exit";
 
