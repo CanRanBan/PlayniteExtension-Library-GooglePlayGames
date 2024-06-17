@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using File = System.IO.File;
 
 namespace GooglePlayGamesLibrary
 {
@@ -53,6 +54,14 @@ namespace GooglePlayGamesLibrary
             internal readonly string gameName;
         }
 
+        private static string GetShortcutDescription(string shortcut)
+        {
+            var wshShell = new IWshRuntimeLibrary.WshShell();
+            var wshShortcut = (IWshRuntimeLibrary.IWshShortcut)wshShell.CreateShortcut(shortcut);
+
+            return wshShortcut.Description;
+        }
+
         private static string[] GetShortcutContentArray(string shortcut)
         {
             var shortcutContent = File.ReadAllText(shortcut);
@@ -60,12 +69,21 @@ namespace GooglePlayGamesLibrary
             var shortcutContentArray = new string[4];
             var shortcutContentWithoutNullCharacters = Regex.Replace(shortcutContent, GooglePlayGames.shortcutRemoveNullCharactersRegex, string.Empty);
             var shortcutContentWithoutSpecialCharacters = Regex.Replace(shortcutContentWithoutNullCharacters, GooglePlayGames.shortcutRemoveControlCharactersAndUnicodeRegex, string.Empty);
-            var shortcutContentArrayUnclean = Regex.Split(shortcutContentWithoutSpecialCharacters, GooglePlayGames.shortcutMatchRegex);
+            var shortcutContentGameStartURLArrayUnclean = Regex.Split(shortcutContentWithoutSpecialCharacters, GooglePlayGames.shortcutMatchGameStartURLRegex);
 
-            shortcutContentArray[0] = shortcutContentArrayUnclean[1];
-            shortcutContentArray[1] = shortcutContentArrayUnclean[2];
-            shortcutContentArray[2] = shortcutContentArrayUnclean[3];
-            shortcutContentArray[3] = shortcutContentArrayUnclean[4];
+            // googleplaygames://launch/?id=
+            shortcutContentArray[0] = shortcutContentGameStartURLArrayUnclean[1];
+            // <gameID>
+            shortcutContentArray[1] = shortcutContentGameStartURLArrayUnclean[2];
+            // &lid=<someNumber>&pid=<someAdditionalNumber>
+            shortcutContentArray[2] = shortcutContentGameStartURLArrayUnclean[3];
+
+            // „<gameName>“, <GooglePlayGames.ApplicationName>
+            var gameNameUnclean = GetShortcutDescription(shortcut);
+            var gameName = Regex.Split(gameNameUnclean, GooglePlayGames.shortcutMatchGameNameRegex);
+
+            // <gameName>
+            shortcutContentArray[3] = gameName[1];
 
             return shortcutContentArray;
         }
