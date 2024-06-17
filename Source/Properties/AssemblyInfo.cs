@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Google Play Games on PC Library for Playnite")]
-[assembly: AssemblyCopyright("Copyright © 2023 - CanRanBan")]
+[assembly: AssemblyCopyright("Copyright © 2023-2024 - CanRanBan")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
