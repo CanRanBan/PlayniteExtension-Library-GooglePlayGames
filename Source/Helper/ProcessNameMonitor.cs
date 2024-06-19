@@ -3,6 +3,7 @@ using Playnite.SDK;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,9 @@ namespace GooglePlayGamesLibrary.Helper
         // Shared resources
         private readonly ILogger logger;
         private readonly IPlayniteAPI playniteAPI;
+
+        // Workaround for 32-bit Playnite
+        private readonly bool is32BitPlaynite = Assembly.GetEntryAssembly().GetName().ProcessorArchitecture.Equals(ProcessorArchitecture.X86);
 
         #region ThreadingVariables
         private readonly SynchronizationContext processNameMonitorContext;
@@ -86,7 +90,7 @@ namespace GooglePlayGamesLibrary.Helper
                     return;
                 }
 
-                var gameProcessID = GetProcessID(gameName);
+                var gameProcessID = GetProcessID(gameName, is32BitPlaynite);
 
                 if (!gameStarted && gameProcessID > 0)
                 {
@@ -107,39 +111,68 @@ namespace GooglePlayGamesLibrary.Helper
         }
         #endregion Monitoring
 
-        private int GetProcessID(string gameName)
+        private int GetProcessID(string gameName, bool use32BitWorkaround)
         {
             // PowerShell: Get-Process | Where-Object { $_.MainWindowTitle -Match "$gameName" }
             // processID >0 = wanted ID found, 0 = no emulator process open, -1 = game not found despite emulator process(es) open, -2 = other application(s) with same name open
             var processID = 0;
 
-            // Get emulator process ID of running game for time tracking purposes
+            var emulatorPath = GooglePlayGames.EmulatorExecutablePath;
             var emulatorExecutableName = GooglePlayGames.EmulatorExecutableName;
-            var emulatorProcessList = Process.GetProcessesByName(emulatorExecutableName);
 
-            if (emulatorProcessList.Any())
+            if (use32BitWorkaround)
             {
-                var emulatorPath = GooglePlayGames.EmulatorExecutablePath;
+                var gameWindowList = ProcessHelper.FindWindowsMatchingText(gameName);
 
-                foreach (var emulatorProcess in emulatorProcessList)
+                if (gameWindowList.Any())
                 {
-                    var processPath = emulatorProcess.MainModule?.FileName;
-                    if (Paths.AreEqual(emulatorPath, processPath))
+                    foreach (var gameWindow in gameWindowList)
                     {
-                        processID = -1;
+                        ProcessHelper.GetWindowThreadProcessId(gameWindow, out uint gameWindowProcessID);
 
-                        if (string.Equals(emulatorProcess.MainWindowTitle, gameName))
+                        var processPath = ProcessHelper.GetFullPathOfProcessByID(gameWindowProcessID);
+
+                        if (Paths.AreEqual(emulatorPath, processPath))
                         {
-                            processID = emulatorProcess.Id;
+                            processID = (int)gameWindowProcessID;
 
                             logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' found. Process ID = '" + processID + @"'.");
 
                             return processID;
                         }
+                        else
+                        {
+                            processID = -2;
+                        }
                     }
-                    else
+                }
+            }
+            else
+            {
+                var emulatorProcessList = Process.GetProcessesByName(emulatorExecutableName);
+
+                if (emulatorProcessList.Any())
+                {
+                    foreach (var emulatorProcess in emulatorProcessList)
                     {
-                        processID = -2;
+                        var processPath = emulatorProcess.MainModule?.FileName;
+                        if (Paths.AreEqual(emulatorPath, processPath))
+                        {
+                            processID = -1;
+
+                            if (string.Equals(emulatorProcess.MainWindowTitle, gameName))
+                            {
+                                processID = emulatorProcess.Id;
+
+                                logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' found. Process ID = '" + processID + @"'.");
+
+                                return processID;
+                            }
+                        }
+                        else
+                        {
+                            processID = -2;
+                        }
                     }
                 }
             }
