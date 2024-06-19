@@ -90,7 +90,7 @@ namespace GooglePlayGamesLibrary.Helper
                     return;
                 }
 
-                var gameProcessID = GetProcessID(gameName, is32BitPlaynite);
+                var gameProcessID = GetProcessID(gameName);
 
                 if (!gameStarted && gameProcessID > 0)
                 {
@@ -111,68 +111,49 @@ namespace GooglePlayGamesLibrary.Helper
         }
         #endregion Monitoring
 
-        private int GetProcessID(string gameName, bool use32BitWorkaround)
+        private int GetProcessID(string gameName)
         {
             // PowerShell: Get-Process | Where-Object { $_.MainWindowTitle -Match "$gameName" }
             // processID >0 = wanted ID found, 0 = no emulator process open, -1 = game not found despite emulator process(es) open, -2 = other application(s) with same name open
             var processID = 0;
 
-            var emulatorPath = GooglePlayGames.EmulatorExecutablePath;
+            // Get emulator process ID of running game for time tracking purposes
             var emulatorExecutableName = GooglePlayGames.EmulatorExecutableName;
+            var emulatorProcessList = Process.GetProcessesByName(emulatorExecutableName);
 
-            if (use32BitWorkaround)
+            if (emulatorProcessList.Any())
             {
-                var gameWindowList = ProcessHelper.FindWindowsMatchingText(gameName);
+                var emulatorPath = GooglePlayGames.EmulatorExecutablePath;
 
-                if (gameWindowList.Any())
+                foreach (var emulatorProcess in emulatorProcessList)
                 {
-                    foreach (var gameWindow in gameWindowList)
+                    string processPath;
+
+                    if (is32BitPlaynite)
                     {
-                        ProcessHelper.GetWindowThreadProcessId(gameWindow, out uint gameWindowProcessID);
+                        processPath = ProcessHelper.GetFullPathOfProcessByID((uint)emulatorProcess.Id);
+                    }
+                    else
+                    {
+                        processPath = emulatorProcess.MainModule?.FileName;
+                    }
 
-                        var processPath = ProcessHelper.GetFullPathOfProcessByID(gameWindowProcessID);
+                    if (Paths.AreEqual(emulatorPath, processPath))
+                    {
+                        processID = -1;
 
-                        if (Paths.AreEqual(emulatorPath, processPath))
+                        if (string.Equals(emulatorProcess.MainWindowTitle, gameName))
                         {
-                            processID = (int)gameWindowProcessID;
+                            processID = emulatorProcess.Id;
 
                             logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' found. Process ID = '" + processID + @"'.");
 
                             return processID;
                         }
-                        else
-                        {
-                            processID = -2;
-                        }
                     }
-                }
-            }
-            else
-            {
-                var emulatorProcessList = Process.GetProcessesByName(emulatorExecutableName);
-
-                if (emulatorProcessList.Any())
-                {
-                    foreach (var emulatorProcess in emulatorProcessList)
+                    else
                     {
-                        var processPath = emulatorProcess.MainModule?.FileName;
-                        if (Paths.AreEqual(emulatorPath, processPath))
-                        {
-                            processID = -1;
-
-                            if (string.Equals(emulatorProcess.MainWindowTitle, gameName))
-                            {
-                                processID = emulatorProcess.Id;
-
-                                logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' found. Process ID = '" + processID + @"'.");
-
-                                return processID;
-                            }
-                        }
-                        else
-                        {
-                            processID = -2;
-                        }
+                        processID = -2;
                     }
                 }
             }
