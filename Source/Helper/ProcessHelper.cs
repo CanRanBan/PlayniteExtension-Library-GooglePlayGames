@@ -1,6 +1,6 @@
 ﻿namespace GooglePlayGamesLibrary.Helper
 {
-    internal class ProcessHelper
+    internal static class ProcessHelper
     {
         #region FindWindowByTitle
 
