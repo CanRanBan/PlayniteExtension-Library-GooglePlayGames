@@ -37,11 +37,19 @@ namespace GooglePlayGamesLibrary
 
         private const string mainExecutableName = @"Bootstrapper";
         internal const string ServiceExecutableName = @"Service";
+        internal const string EmulatorExecutableName = @"crosvm";
 
         private const string executableExtension = @".exe";
 
         private const string imageTypeIconExtension = @".ico";
         private const string imageTypePNGExtension = @".png";
+
+        public const string StartWithClient = @"Start game with " + ApplicationName + @".";
+
+        internal const string shortcutRemoveNullCharactersRegex = @"\0";
+        internal const string shortcutRemoveControlCharactersAndUnicodeRegex = @"[^\u0020-\u007E]";
+        internal const string shortcutMatchGameStartURLRegex = @"(?:.+)(googleplaygames://launch/\?id=)(.+)(&lid=\d+&pid=\d+)(?:.+)";
+        internal const string shortcutMatchGameNameRegex = @"(?:\S)(.+)(?:\S\,\s.+)";
 
         private const string exitCommandLineArgument = @"/exit";
 
@@ -263,13 +271,41 @@ namespace GooglePlayGamesLibrary
             }
         }
 
+        public static string EmulatorExecutablePath
+        {
+            get
+            {
+                var installPath = InstallationPath;
+                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, @"current", @"emulator", EmulatorExecutableName + executableExtension);
+            }
+        }
+
+        public static string ShortcutsPath
+        {
+            get
+            {
+                string shortcutsPath;
+
+                var roaming = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                shortcutsPath = Path.Combine(roaming, @"Microsoft", @"Windows", @"Start Menu", @"Programs", ApplicationName);
+                if (Directory.Exists(shortcutsPath))
+                {
+                    return shortcutsPath;
+                }
+
+                return string.Empty;
+            }
+        }
+
         public static bool IsInstalled
         {
             get
             {
                 var mainPath = MainExecutablePath;
                 var servicePath = ServiceExecutablePath;
-                return !string.IsNullOrEmpty(mainPath) && !string.IsNullOrEmpty(servicePath) && File.Exists(mainPath) && File.Exists(servicePath);
+                var emulatorPath = EmulatorExecutablePath;
+                return !string.IsNullOrEmpty(mainPath) && !string.IsNullOrEmpty(servicePath) && !string.IsNullOrEmpty(emulatorPath)
+                    && File.Exists(mainPath) && File.Exists(servicePath) && File.Exists(emulatorPath);
             }
         }
 

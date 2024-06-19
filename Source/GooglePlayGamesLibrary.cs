@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using File = System.IO.File;
 
 namespace GooglePlayGamesLibrary
 {
@@ -38,6 +40,76 @@ namespace GooglePlayGamesLibrary
                 CanShutdownClient = true,
                 HasSettings = true
             };
+        }
+
+        internal readonly struct GameData
+        {
+            internal GameData(string gameStartURL, string gameName)
+            {
+                this.gameStartURL = gameStartURL;
+                this.gameName = gameName;
+            }
+
+            internal readonly string gameStartURL;
+            internal readonly string gameName;
+        }
+
+        private static string GetShortcutDescription(string shortcut)
+        {
+            var wshShell = new IWshRuntimeLibrary.WshShell();
+            var wshShortcut = (IWshRuntimeLibrary.IWshShortcut)wshShell.CreateShortcut(shortcut);
+
+            return wshShortcut.Description;
+        }
+
+        private static string[] GetShortcutContentArray(string shortcut)
+        {
+            var shortcutContent = File.ReadAllText(shortcut);
+
+            var shortcutContentArray = new string[4];
+            var shortcutContentWithoutNullCharacters = Regex.Replace(shortcutContent, GooglePlayGames.shortcutRemoveNullCharactersRegex, string.Empty);
+            var shortcutContentWithoutSpecialCharacters = Regex.Replace(shortcutContentWithoutNullCharacters, GooglePlayGames.shortcutRemoveControlCharactersAndUnicodeRegex, string.Empty);
+            var shortcutContentGameStartURLArrayUnclean = Regex.Split(shortcutContentWithoutSpecialCharacters, GooglePlayGames.shortcutMatchGameStartURLRegex);
+
+            // googleplaygames://launch/?id=
+            shortcutContentArray[0] = shortcutContentGameStartURLArrayUnclean[1];
+            // <gameID>
+            shortcutContentArray[1] = shortcutContentGameStartURLArrayUnclean[2];
+            // &lid=<someNumber>&pid=<someAdditionalNumber>
+            shortcutContentArray[2] = shortcutContentGameStartURLArrayUnclean[3];
+
+            // „<gameName>“, <GooglePlayGames.ApplicationName>
+            var gameNameUnclean = GetShortcutDescription(shortcut);
+            var gameName = Regex.Split(gameNameUnclean, GooglePlayGames.shortcutMatchGameNameRegex);
+
+            // <gameName>
+            shortcutContentArray[3] = gameName[1];
+
+            return shortcutContentArray;
+        }
+
+        internal static Dictionary<string, GameData> GetInstalledGamesShortcutData()
+        {
+            var shortcutData = new Dictionary<string, GameData>();
+
+            var shortcutsPath = GooglePlayGames.ShortcutsPath;
+            var shortcuts = Directory.GetFiles(shortcutsPath);
+
+            foreach (var shortcut in shortcuts)
+            {
+                var shortcutContentArray = GetShortcutContentArray(shortcut);
+
+                var gameIdentifier = shortcutContentArray[1];
+
+                var gameStartURL = string.Join(string.Empty, shortcutContentArray[0], shortcutContentArray[1], shortcutContentArray[2]);
+                var gameName = shortcutContentArray[3];
+
+                var gameData = new GameData(gameStartURL, gameName);
+
+                shortcutData.Add(gameIdentifier, gameData);
+            }
+
+            return shortcutData;
         }
 
         private static List<string> GetInstalledGamesIdentifiers()
@@ -84,16 +156,20 @@ namespace GooglePlayGamesLibrary
                 return installedGames;
             }
 
+            var installedGamesShortcutData = GetInstalledGamesShortcutData();
+
             var libraryMetadataProvider = new GooglePlayGamesLibraryMetadataProvider();
 
             foreach (var gameIdentifier in installedGamesIdentifiers)
             {
+                var newGameShortcutData = installedGamesShortcutData[gameIdentifier];
+
                 var newGameMedia = libraryMetadataProvider.GetMetadata(gameIdentifier);
 
                 var newGame = new GameMetadata
                 {
                     GameId = gameIdentifier,
-                    Name = gameIdentifier,
+                    Name = newGameShortcutData.gameName,
                     Icon = newGameMedia.Icon,
                     BackgroundImage = newGameMedia.BackgroundImage,
                     IsInstalled = true,
@@ -160,6 +236,16 @@ namespace GooglePlayGamesLibrary
             }
 
             return games;
+        }
+
+        public override IEnumerable<PlayController> GetPlayActions(GetPlayActionsArgs args)
+        {
+            if (args.Game.PluginId != Id)
+            {
+                yield break;
+            }
+
+            yield return new GooglePlayGamesLibraryPlayController(logger, playniteAPI, args.Game);
         }
 
         public override LibraryMetadataProvider GetMetadataDownloader()
