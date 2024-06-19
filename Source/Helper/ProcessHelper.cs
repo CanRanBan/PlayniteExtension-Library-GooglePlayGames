@@ -60,9 +60,42 @@ namespace GooglePlayGamesLibrary.Helper
 
         #endregion FindWindowByTitle
 
+        #region GetFullPathOfProcess
+
+        internal static string GetFullPathOfProcessByID(uint processID)
+        {
+            var fullPath = string.Empty;
+
+            var handle = OpenProcess(QueryLimitedInformation, false, processID);
+
+            try
+            {
+                var size = 1024;
+                var builder = new StringBuilder(size);
+                var builderCapacity = (uint)builder.Capacity + 1;
+                var result = QueryFullProcessImageName(handle, 0, builder, ref builderCapacity);
+
+                if (result)
+                {
+                    fullPath = builder.ToString();
+                }
+
+                return fullPath;
+            }
+            finally
+            {
+                CloseHandle(handle);
+            }
+        }
+
+        #endregion GetFullPathOfProcess
+
         #region PrivateImports
 
         private const string user32DLL = "user32.dll";
+        private const string kernel32DLL = "kernel32.dll";
+
+        private const uint QueryLimitedInformation = 0x1000;
 
         private delegate bool EnumWindowsProc([In] IntPtr hWnd, [In] IntPtr lParam);
 
@@ -77,7 +110,18 @@ namespace GooglePlayGamesLibrary.Helper
         private static extern int GetWindowTextLength([In] IntPtr hWnd);
 
         [DllImport(user32DLL, SetLastError = true)]
-        private static extern uint GetWindowThreadProcessId([In] IntPtr hWnd, [Out, Optional] out uint lpdwProcessId);
+        internal static extern uint GetWindowThreadProcessId([In] IntPtr hWnd, [Out, Optional] out uint lpdwProcessId);
+
+        [DllImport(kernel32DLL, SetLastError = true)]
+        private static extern IntPtr OpenProcess([In] uint dwDesiredAccess, [In] bool bInheritHandle, [In] uint dwProcessId);
+
+        [DllImport(kernel32DLL, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool QueryFullProcessImageName([In] IntPtr hProcess, [In] uint dwFlags, [Out] StringBuilder lpExeName, [In, Out] ref uint lpdwSize);
+
+        [DllImport(kernel32DLL, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool CloseHandle([In] IntPtr hObject);
 
         #endregion PrivateImports
     }
