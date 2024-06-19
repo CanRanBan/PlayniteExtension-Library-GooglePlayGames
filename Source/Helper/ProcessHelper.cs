@@ -1,4 +1,9 @@
-﻿namespace GooglePlayGamesLibrary.Helper
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text;
+
+namespace GooglePlayGamesLibrary.Helper
 {
     internal static class ProcessHelper
     {
@@ -59,20 +64,20 @@
 
         private const string user32DLL = "user32.dll";
 
-        private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+        private delegate bool EnumWindowsProc([In] IntPtr hWnd, [In] IntPtr lParam);
 
         [DllImport(user32DLL)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+        private static extern bool EnumWindows([In] EnumWindowsProc lpEnumFunc, [In] IntPtr lParam);
 
         [DllImport(user32DLL, CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+        private static extern int GetWindowText([In] IntPtr hWnd, [Out] StringBuilder lpString, [In] int nMaxCount);
 
         [DllImport(user32DLL, CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern int GetWindowTextLength(IntPtr hWnd);
+        private static extern int GetWindowTextLength([In] IntPtr hWnd);
 
         [DllImport(user32DLL, SetLastError = true)]
-        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        private static extern uint GetWindowThreadProcessId([In] IntPtr hWnd, [Out, Optional] out uint lpdwProcessId);
 
         #endregion PrivateImports
     }
