@@ -1,13 +1,18 @@
-﻿using Playnite.Common;
+﻿using GooglePlayGamesLibrary.Helper;
+using Playnite.Common;
 using Playnite.SDK;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 
 namespace GooglePlayGamesLibrary
 {
     public class GooglePlayGamesLibraryClient : LibraryClient
     {
         private readonly ILogger logger;
+
+        // Workaround for 32-bit Playnite
+        private readonly bool is32BitPlaynite = Assembly.GetEntryAssembly().GetName().ProcessorArchitecture.Equals(ProcessorArchitecture.X86);
 
         public GooglePlayGamesLibraryClient(ILogger logger)
         {
@@ -41,7 +46,17 @@ namespace GooglePlayGamesLibrary
 
                 foreach (var serviceProcess in serviceProcessList)
                 {
-                    var processPath = serviceProcess.MainModule?.FileName;
+                    string processPath;
+
+                    if (is32BitPlaynite)
+                    {
+                        processPath = ProcessHelper.GetFullPathOfProcessByID((uint)serviceProcess.Id);
+                    }
+                    else
+                    {
+                        processPath = serviceProcess.MainModule?.FileName;
+                    }
+
                     if (Paths.AreEqual(servicePath, processPath))
                     {
                         GooglePlayGames.ExitClient();
