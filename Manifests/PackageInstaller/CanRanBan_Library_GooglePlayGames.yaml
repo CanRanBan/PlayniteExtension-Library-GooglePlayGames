@@ -20,3 +20,11 @@ Packages:
       - 'Improve installation check of Google Play Games to prevent unexpected installation not found notifications.'
       - 'Add notification if no games are installed.'
       - 'Remove notifications after underlying issue was resolved.'
+  - Version: 0.2.0
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2024-06-19
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.0/CanRanBan_Library_GooglePlayGames_v0.2.0.pext
+    Changelog:
+      - 'Increase resolution of library icon.'
+      - 'Add custom play controller allowing to launch and track games.'
+      - 'Replace settings template with notice explaining currently no settings available.'
