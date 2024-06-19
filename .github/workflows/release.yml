@@ -10,12 +10,12 @@ jobs:
     runs-on: windows-2019
     steps:
       - name: Checkout repository and submodules
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Setup Nuget.exe
-        uses: NuGet/setup-nuget@v1
+        uses: NuGet/setup-nuget@v2
 
       - name: Nuget Restore
         run: nuget restore ".\Google Play Games - Library.sln"
@@ -38,7 +38,7 @@ jobs:
            Get-ChildItem -Filter *.pext | Rename-Item -NewName "CanRanBan_Library_GooglePlayGames_${{ github.ref_name }}.pext"
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           draft: true
