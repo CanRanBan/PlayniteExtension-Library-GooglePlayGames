@@ -19,7 +19,7 @@ namespace GooglePlayGamesLibrary.Helper
                 var size = 1024;
                 var builder = new StringBuilder(size);
                 var builderCapacity = (uint)builder.Capacity + 1;
-                var result = QueryFullProcessImageName(handle, 0, builder, ref builderCapacity);
+                var result = QueryFullProcessImageName(handle, UseWin32PathFormat, builder, ref builderCapacity);
 
                 if (result)
                 {
@@ -41,6 +41,8 @@ namespace GooglePlayGamesLibrary.Helper
         private const string kernel32DLL = "kernel32.dll";
 
         private const uint QueryLimitedInformation = 0x1000;
+
+        private const uint UseWin32PathFormat = 0;
 
         [DllImport(kernel32DLL, SetLastError = true)]
         private static extern IntPtr OpenProcess([In] uint dwDesiredAccess, [In] bool bInheritHandle, [In] uint dwProcessId);
