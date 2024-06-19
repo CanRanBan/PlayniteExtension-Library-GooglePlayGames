@@ -64,37 +64,37 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Include\Playnite\source\Playnite\Common\Extensions\StringExtensions.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Common\Extensions\StringExtensions.cs">
       <Link>Include\Playnite\Common\Extensions\StringExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Common\Paths.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Common\Paths.cs">
       <Link>Include\Playnite\Common\Paths.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Common\ProcessStarter.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Common\ProcessStarter.cs">
       <Link>Include\Playnite\Common\ProcessStarter.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Native\Fileapi.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Native\Fileapi.cs">
       <Link>Include\Playnite\Native\Fileapi.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Native\Kernel32.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Native\Kernel32.cs">
       <Link>Include\Playnite\Native\Kernel32.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Native\Ntdll.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Native\Ntdll.cs">
       <Link>Include\Playnite\Native\Ntdll.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Native\Processthreadsapi.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Native\Processthreadsapi.cs">
       <Link>Include\Playnite\Native\Processthreadsapi.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Native\Shlwapi.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Native\Shlwapi.cs">
       <Link>Include\Playnite\Native\Shlwapi.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Native\Winbase.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Native\Winbase.cs">
       <Link>Include\Playnite\Native\Winbase.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Native\Windef.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Native\Windef.cs">
       <Link>Include\Playnite\Native\Windef.cs</Link>
     </Compile>
-    <Compile Include="..\Include\Playnite\source\Playnite\Native\winuser.cs">
+    <Compile Include="..\Include\Playnite\Source\Playnite\Native\winuser.cs">
       <Link>Include\Playnite\Native\winuser.cs</Link>
     </Compile>
     <Compile Include="GooglePlayGames.cs" />
