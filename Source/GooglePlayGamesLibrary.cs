@@ -64,26 +64,95 @@ namespace GooglePlayGamesLibrary
 
         private static string[] GetShortcutContentArray(string shortcut)
         {
-            var shortcutContent = File.ReadAllText(shortcut);
+            Exception shortcutContentError = null;
+            var shortcutContentErrorIdentifier = "GooglePlayGamesShortcutContentError";
+
+            var shortcutContent = string.Empty;
+
+            try
+            {
+                shortcutContent = File.ReadAllText(shortcut);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Failed to read required shortcut data. Faulting step: ReadAllText.");
+                shortcutContentError = e;
+            }
 
             var shortcutContentArray = new string[4];
-            var shortcutContentWithoutNullCharacters = Regex.Replace(shortcutContent, GooglePlayGames.shortcutRemoveNullCharactersRegex, string.Empty);
-            var shortcutContentWithoutSpecialCharacters = Regex.Replace(shortcutContentWithoutNullCharacters, GooglePlayGames.shortcutRemoveControlCharactersAndUnicodeRegex, string.Empty);
-            var shortcutContentGameStartURLArrayUnclean = Regex.Split(shortcutContentWithoutSpecialCharacters, GooglePlayGames.shortcutMatchGameStartURLRegex);
+            var shortcutContentGameStartURLArrayUnclean = new string[5];
 
-            // googleplaygames://launch/?id=
-            shortcutContentArray[0] = shortcutContentGameStartURLArrayUnclean[1];
-            // <gameID>
-            shortcutContentArray[1] = shortcutContentGameStartURLArrayUnclean[2];
-            // &lid=<someNumber>&pid=<someAdditionalNumber>
-            shortcutContentArray[2] = shortcutContentGameStartURLArrayUnclean[3];
+            try
+            {
+                var shortcutContentWithoutNullCharacters = Regex.Replace(shortcutContent, GooglePlayGames.shortcutRemoveNullCharactersRegex, string.Empty);
+                var shortcutContentWithoutSpecialCharacters = Regex.Replace(shortcutContentWithoutNullCharacters, GooglePlayGames.shortcutRemoveControlCharactersAndUnicodeRegex, string.Empty);
+                shortcutContentGameStartURLArrayUnclean = Regex.Split(shortcutContentWithoutSpecialCharacters, GooglePlayGames.shortcutMatchGameStartURLRegex);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Failed to read required shortcut data. Faulting step: GameStartURL -> Regex.Replace&Split.");
+                shortcutContentError = e;
+            }
 
-            // „<gameName>“, <GooglePlayGames.ApplicationName>
-            var gameNameUnclean = GetShortcutDescription(shortcut);
-            var gameName = Regex.Split(gameNameUnclean, GooglePlayGames.shortcutMatchGameNameRegex);
+            try
+            {
+                // googleplaygames://launch/?id=
+                shortcutContentArray[0] = shortcutContentGameStartURLArrayUnclean[1];
+                // <gameID>
+                shortcutContentArray[1] = shortcutContentGameStartURLArrayUnclean[2];
+                // &lid=<someNumber>&pid=<someAdditionalNumber>
+                shortcutContentArray[2] = shortcutContentGameStartURLArrayUnclean[3];
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Failed to read required shortcut data. Faulting step: GameStartURL -> Array Copy.");
+                shortcutContentError = e;
+            }
 
-            // <gameName>
-            shortcutContentArray[3] = gameName[1];
+            var gameNameUnclean = string.Empty;
+            var gameNameArrayUnclean = new string[3];
+
+            try
+            {
+                // „<gameName>“, <GooglePlayGames.ApplicationName>
+                gameNameUnclean = GetShortcutDescription(shortcut);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Failed to read required shortcut data. Faulting step: GameName -> GetShortcutDescription.");
+                shortcutContentError = e;
+            }
+
+            try
+            {
+                gameNameArrayUnclean = Regex.Split(gameNameUnclean, GooglePlayGames.shortcutMatchGameNameRegex);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Failed to read required shortcut data. Faulting step: GameName -> Regex.Split.");
+                shortcutContentError = e;
+            }
+
+            try
+            {
+                // <gameName>
+                shortcutContentArray[3] = gameNameArrayUnclean[1];
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Failed to read required shortcut data. Faulting step: GameName -> Array Copy.");
+                shortcutContentError = e;
+            }
+
+            if (shortcutContentError != null)
+            {
+                var shortcutContentErrorMessage = "Failed to read required shortcut data. Additional details are depicted in 'extensions.log' or 'playnite.log'.";
+                playniteAPI.Notifications.Add(shortcutContentErrorIdentifier, shortcutContentErrorMessage, NotificationType.Error);
+            }
+            else
+            {
+                playniteAPI.Notifications.Remove(shortcutContentErrorIdentifier);
+            }
 
             return shortcutContentArray;
         }
