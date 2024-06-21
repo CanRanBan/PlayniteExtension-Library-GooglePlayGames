@@ -64,26 +64,79 @@ namespace GooglePlayGamesLibrary
 
         private static string[] GetShortcutContentArray(string shortcut)
         {
-            var shortcutContent = File.ReadAllText(shortcut);
+            var shortcutContentErrorIdentifier = "GooglePlayGamesShortcutContentError";
 
+            Exception shortcutContentDataError = null;
+            var shortcutContentDataErrorMessage = "Failed to read shortcut data. Faulting step: ReadAllText.";
+
+            Exception shortcutContentMandatoryDataError = null;
+            var shortcutContentMandatoryDataErrorMessage = "Failed to read mandatory shortcut data. Faulting step: GameStartURL.";
+
+            Exception shortcutContentOptionalDataError = null;
+            var shortcutContentOptionalDataErrorMessage = "Failed to read optional shortcut data. Faulting step: GameName.";
+
+            var shortcutContent = string.Empty;
             var shortcutContentArray = new string[4];
-            var shortcutContentWithoutNullCharacters = Regex.Replace(shortcutContent, GooglePlayGames.shortcutRemoveNullCharactersRegex, string.Empty);
-            var shortcutContentWithoutSpecialCharacters = Regex.Replace(shortcutContentWithoutNullCharacters, GooglePlayGames.shortcutRemoveControlCharactersAndUnicodeRegex, string.Empty);
-            var shortcutContentGameStartURLArrayUnclean = Regex.Split(shortcutContentWithoutSpecialCharacters, GooglePlayGames.shortcutMatchGameStartURLRegex);
 
-            // googleplaygames://launch/?id=
-            shortcutContentArray[0] = shortcutContentGameStartURLArrayUnclean[1];
-            // <gameID>
-            shortcutContentArray[1] = shortcutContentGameStartURLArrayUnclean[2];
-            // &lid=<someNumber>&pid=<someAdditionalNumber>
-            shortcutContentArray[2] = shortcutContentGameStartURLArrayUnclean[3];
+            try
+            {
+                shortcutContent = File.ReadAllText(shortcut);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, shortcutContentDataErrorMessage);
+                shortcutContentDataError = e;
+            }
 
-            // „<gameName>“, <GooglePlayGames.ApplicationName>
-            var gameNameUnclean = GetShortcutDescription(shortcut);
-            var gameName = Regex.Split(gameNameUnclean, GooglePlayGames.shortcutMatchGameNameRegex);
+            if (shortcutContentDataError == null)
+            {
+                try
+                {
+                    var shortcutContentWithoutNullCharacters = Regex.Replace(shortcutContent, GooglePlayGames.shortcutRemoveNullCharactersRegex, string.Empty);
+                    var shortcutContentWithoutSpecialCharacters = Regex.Replace(shortcutContentWithoutNullCharacters, GooglePlayGames.shortcutRemoveControlCharactersAndUnicodeRegex, string.Empty);
+                    var shortcutContentGameStartURLArrayUnclean = Regex.Split(shortcutContentWithoutSpecialCharacters, GooglePlayGames.shortcutMatchGameStartURLRegex);
 
-            // <gameName>
-            shortcutContentArray[3] = gameName[1];
+                    // googleplaygames://launch/?id=
+                    shortcutContentArray[0] = shortcutContentGameStartURLArrayUnclean[1];
+                    // <gameID>
+                    shortcutContentArray[1] = shortcutContentGameStartURLArrayUnclean[2];
+                    // &lid=<someNumber>&pid=<someAdditionalNumber>
+                    shortcutContentArray[2] = shortcutContentGameStartURLArrayUnclean[3];
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, shortcutContentMandatoryDataErrorMessage);
+                    shortcutContentMandatoryDataError = e;
+                }
+
+                if (shortcutContentMandatoryDataError == null)
+                {
+                    try
+                    {
+                        // „<gameName>“, <GooglePlayGames.ApplicationName>
+                        var gameNameUnclean = GetShortcutDescription(shortcut);
+                        var gameName = Regex.Split(gameNameUnclean, GooglePlayGames.shortcutMatchGameNameRegex);
+
+                        // <gameName>
+                        shortcutContentArray[3] = gameName[1];
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Warn(e, shortcutContentOptionalDataErrorMessage);
+                        shortcutContentOptionalDataError = e;
+                    }
+                }
+            }
+
+            if (shortcutContentDataError != null || shortcutContentMandatoryDataError != null)
+            {
+                var shortcutContentErrorMessage = "Failed to read required shortcut data. Additional details are depicted in 'extensions.log'.";
+                playniteAPI.Notifications.Add(shortcutContentErrorIdentifier, shortcutContentErrorMessage, NotificationType.Error);
+            }
+            else
+            {
+                playniteAPI.Notifications.Remove(shortcutContentErrorIdentifier);
+            }
 
             return shortcutContentArray;
         }
