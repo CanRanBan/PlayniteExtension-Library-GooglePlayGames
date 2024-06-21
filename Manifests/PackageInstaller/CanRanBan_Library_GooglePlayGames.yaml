@@ -28,3 +28,9 @@ Packages:
       - 'Increase resolution of library icon.'
       - 'Add custom play controller allowing to launch and track games.'
       - 'Replace settings template with notice explaining currently no settings available.'
+  - Version: 0.2.1
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2024-06-21
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.1/CanRanBan_Library_GooglePlayGames_v0.2.1.pext
+    Changelog:
+      - 'Use game ID as fallback for game name if shortcut data parsing is defective.'
