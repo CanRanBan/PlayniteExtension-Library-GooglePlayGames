@@ -156,20 +156,41 @@ namespace GooglePlayGamesLibrary
                 return installedGames;
             }
 
-            var installedGamesShortcutData = GetInstalledGamesShortcutData();
+            var installedGamesShortcutData = new Dictionary<string, GameData>();
+
+            try
+            {
+                installedGamesShortcutData = GetInstalledGamesShortcutData();
+            }
+            catch (Exception)
+            {
+                // Use game ID as fallback for game name if shortcut data parsing is defective.
+            }
 
             var libraryMetadataProvider = new GooglePlayGamesLibraryMetadataProvider();
 
             foreach (var gameIdentifier in installedGamesIdentifiers)
             {
-                var newGameShortcutData = installedGamesShortcutData[gameIdentifier];
+                string gameName;
+
+                if (installedGamesShortcutData.ContainsKey(gameIdentifier))
+                {
+                    var newGameShortcutData = installedGamesShortcutData[gameIdentifier];
+                    gameName = newGameShortcutData.gameName;
+                }
+                else
+                {
+                    var shortcutDataError = @"Failed to read shortcut data of " + applicationName + @" for '" + gameIdentifier + @"'. Game ID will be used as fallback for game name.";
+                    logger.Info(shortcutDataError);
+                    gameName = gameIdentifier;
+                }
 
                 var newGameMedia = libraryMetadataProvider.GetMetadata(gameIdentifier);
 
                 var newGame = new GameMetadata
                 {
                     GameId = gameIdentifier,
-                    Name = newGameShortcutData.gameName,
+                    Name = gameName,
                     Icon = newGameMedia.Icon,
                     BackgroundImage = newGameMedia.BackgroundImage,
                     IsInstalled = true,
