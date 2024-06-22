@@ -167,9 +167,13 @@ namespace GooglePlayGamesLibrary
                 var gameStartURL = string.Join(string.Empty, shortcutContentArray[0], shortcutContentArray[1], shortcutContentArray[2]);
                 var gameName = shortcutContentArray[3];
 
-                var gameData = new GameData(gameStartURL, gameName);
+                // Allow game name retrieval to fail (gameName = string.Empty).
+                if (!string.IsNullOrEmpty(gameStartURL))
+                {
+                    var gameData = new GameData(gameStartURL, gameName);
 
-                shortcutData.Add(gameIdentifier, gameData);
+                    shortcutData.Add(gameIdentifier, gameData);
+                }
             }
 
             return shortcutData;
@@ -234,14 +238,14 @@ namespace GooglePlayGamesLibrary
 
             foreach (var gameIdentifier in installedGamesIdentifiers)
             {
-                string gameName;
+                var gameName = string.Empty;
 
                 if (installedGamesShortcutData.ContainsKey(gameIdentifier))
                 {
                     var newGameShortcutData = installedGamesShortcutData[gameIdentifier];
                     gameName = newGameShortcutData.gameName;
                 }
-                else
+                if (string.IsNullOrEmpty(gameName))
                 {
                     var shortcutDataError = @"Failed to read shortcut data of " + applicationName + @" for '" + gameIdentifier + @"'. Game ID will be used as fallback for game name.";
                     logger.Info(shortcutDataError);
