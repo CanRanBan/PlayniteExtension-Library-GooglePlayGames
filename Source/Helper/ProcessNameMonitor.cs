@@ -56,12 +56,12 @@ namespace GooglePlayGamesLibrary.Helper
             processNameMonitorToken?.Dispose();
         }
 
-        internal async void StartMonitoring(string gameName, int trackingDelay = 2000, int trackingStartDelay = 0)
+        internal async void StartMonitoring(string gameName, int trackingDelay = 2000, int trackingStartDelay = 0, bool allowEmptyName = false)
         {
             #region RequiredParameterCheck
             var gameNameMissingIdentifier = "GooglePlayGamesGameNameMissing";
 
-            if (string.IsNullOrEmpty(gameName))
+            if (!allowEmptyName && string.IsNullOrEmpty(gameName))
             {
                 var gameNameMissing = "Required game name for ProcessNameMonitor is missing.";
                 playniteAPI.Notifications.Add(gameNameMissingIdentifier, gameNameMissing, NotificationType.Error);
@@ -90,7 +90,7 @@ namespace GooglePlayGamesLibrary.Helper
                     return;
                 }
 
-                var gameProcessID = GetProcessID(gameName);
+                var gameProcessID = GetProcessID(gameName, allowEmptyName);
 
                 if (!gameStarted && gameProcessID > 0)
                 {
@@ -111,10 +111,22 @@ namespace GooglePlayGamesLibrary.Helper
         }
         #endregion Monitoring
 
-        private int GetProcessID(string gameName)
+        private int GetProcessID(string gameName, bool allowEmptyName)
         {
-            // PowerShell: Get-Process | Where-Object { $_.MainWindowTitle -Match "$gameName" }
-            // processID >0 = wanted ID found, 0 = no emulator process open, -1 = game not found despite emulator process(es) open, -2 = other application(s) with same name open
+            /**
+             * Explanation how GetProcessID works using PowerShell examples:
+             *
+             * List all IDs and window titles of emulator processes:
+             * PowerShell: Get-Process -Name crosvm | ForEach-Object { $_.Id, $_.MainWindowTitle }
+             *
+             * Retrieve process ID of emulator process with window title matching gameName:
+             * PowerShell: Get-Process -Name crosvm | Where-Object { $_.MainWindowTitle -Match "$gameName" }
+             *
+             * Alternative method not depending on knowledge of game names, retrieves emulator process with non empty window title:
+             * PowerShell: Get-Process -Name crosvm | Where-Object { ![string]::IsNullOrEmpty($_.MainWindowTitle) }
+             *
+             * Result: processID >0 = wanted ID found, 0 = no emulator process open, -1 = game not found despite emulator process(es) open, -2 = other application(s) with same name open
+             */
             var processID = 0;
 
             // Get emulator process ID of running game for time tracking purposes
@@ -142,11 +154,19 @@ namespace GooglePlayGamesLibrary.Helper
                     {
                         processID = -1;
 
-                        if (string.Equals(emulatorProcess.MainWindowTitle, gameName))
+                        if (!string.IsNullOrEmpty(gameName) && string.Equals(emulatorProcess.MainWindowTitle, gameName))
                         {
                             processID = emulatorProcess.Id;
 
                             logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' found. Process ID = '" + processID + @"'.");
+
+                            return processID;
+                        }
+                        if (allowEmptyName && !string.Equals(emulatorProcess.MainWindowTitle, string.Empty))
+                        {
+                            processID = emulatorProcess.Id;
+
+                            logger.Trace("Tracking fallback was used. " + emulatorExecutableName + @" with window title matching '" + emulatorProcess.MainWindowTitle + @"' found. Process ID = '" + processID + @"'.");
 
                             return processID;
                         }
@@ -164,7 +184,7 @@ namespace GooglePlayGamesLibrary.Helper
                     logger.Trace(emulatorExecutableName + @" is currently not running.");
                     break;
                 case -1:
-                    logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' not found.");
+                    logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' not found. Empty names are allowed: " + allowEmptyName);
                     break;
                 case -2:
                     logger.Trace(@"Other application(s) named '" + emulatorExecutableName + @"' is/are running.");
