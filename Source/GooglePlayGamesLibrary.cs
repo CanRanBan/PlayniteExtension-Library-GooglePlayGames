@@ -152,7 +152,17 @@ namespace GooglePlayGamesLibrary
             {
                 var shortcutContentArray = GetShortcutContentArray(shortcut);
 
-                var gameIdentifier = shortcutContentArray[1];
+                string gameIdentifier;
+
+                if (!string.IsNullOrEmpty(shortcutContentArray[1]))
+                {
+                    gameIdentifier = shortcutContentArray[1];
+                }
+                else
+                {
+                    // Should normally never happen unless additional shortcuts not created by Google Play Games were found.
+                    continue;
+                }
 
                 var gameStartURL = string.Join(string.Empty, shortcutContentArray[0], shortcutContentArray[1], shortcutContentArray[2]);
                 var gameName = shortcutContentArray[3];
