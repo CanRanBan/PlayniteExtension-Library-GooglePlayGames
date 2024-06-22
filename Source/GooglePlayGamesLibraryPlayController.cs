@@ -27,18 +27,6 @@ namespace GooglePlayGamesLibrary
             Name = GooglePlayGames.StartWithClient;
         }
 
-        private string GetGameName(string gameIdentifier)
-        {
-            var gameName = string.Empty;
-
-            if (shortcutData.ContainsKey(gameIdentifier))
-            {
-                gameName = shortcutData[gameIdentifier].gameName;
-            }
-
-            return gameName;
-        }
-
         private string GetGameStartURL(string gameIdentifier)
         {
             var gameStartURL = string.Empty;
@@ -49,6 +37,18 @@ namespace GooglePlayGamesLibrary
             }
 
             return gameStartURL;
+        }
+
+        private string GetGameName(string gameIdentifier)
+        {
+            var gameName = string.Empty;
+
+            if (shortcutData.ContainsKey(gameIdentifier))
+            {
+                gameName = shortcutData[gameIdentifier].gameName;
+            }
+
+            return gameName;
         }
 
         public override void Play(PlayActionArgs args)
