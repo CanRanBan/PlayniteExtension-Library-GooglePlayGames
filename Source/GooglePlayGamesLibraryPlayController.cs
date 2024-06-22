@@ -51,6 +51,18 @@ namespace GooglePlayGamesLibrary
             return gameName;
         }
 
+        private bool GetUseTrackingFallback(string gameIdentifier)
+        {
+            bool useTrackingFallback = true;
+
+            if (shortcutData.ContainsKey(gameIdentifier))
+            {
+                useTrackingFallback = shortcutData[gameIdentifier].useTrackingFallback;
+            }
+
+            return useTrackingFallback;
+        }
+
         public override void Play(PlayActionArgs args)
         {
             Dispose();
@@ -83,20 +95,14 @@ namespace GooglePlayGamesLibrary
                 ProcessStarter.StartUrl(gameStartURL);
 
                 var gameName = GetGameName(gameIdentifier);
+                var useTrackingFallback = GetUseTrackingFallback(gameIdentifier);
 
                 var processNameMonitor = new ProcessNameMonitor(logger, playniteAPI);
                 processNameMonitor.MonitoringStarted += ProcessNameMonitor_GameStarted;
                 processNameMonitor.MonitoringStopped += ProcessNameMonitor_GameExited;
 
-                if (!string.IsNullOrEmpty(gameName))
-                {
-                    processNameMonitor.StartMonitoring(gameName);
-                }
-                else
-                {
-                    // Use non empty window titles as tracking fallback.
-                    processNameMonitor.StartMonitoring(gameName, allowEmptyName: true);
-                }
+                // Use non empty window titles as tracking fallback.
+                processNameMonitor.StartMonitoring(gameName, allowEmptyName: useTrackingFallback);
             }
             else
             {
