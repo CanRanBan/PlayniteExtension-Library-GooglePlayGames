@@ -72,7 +72,7 @@ namespace GooglePlayGamesLibrary
             Exception shortcutContentMandatoryDataError = null;
             var shortcutContentMandatoryDataErrorMessage = "Failed to read mandatory shortcut data. Faulting step: GameStartURL.";
 
-            Exception shortcutContentOptionalDataError = null;
+            // Exception shortcutContentOptionalDataError = null;
             var shortcutContentOptionalDataErrorMessage = "Failed to read optional shortcut data. Faulting step: GameName.";
 
             var shortcutContent = string.Empty;
@@ -123,7 +123,7 @@ namespace GooglePlayGamesLibrary
                     catch (Exception e)
                     {
                         logger.Warn(e, shortcutContentOptionalDataErrorMessage);
-                        shortcutContentOptionalDataError = e;
+                        // shortcutContentOptionalDataError = e;
                     }
                 }
             }
