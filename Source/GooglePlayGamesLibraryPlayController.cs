@@ -67,7 +67,16 @@ namespace GooglePlayGamesLibrary
                 var processNameMonitor = new ProcessNameMonitor(logger, playniteAPI);
                 processNameMonitor.MonitoringStarted += ProcessNameMonitor_GameStarted;
                 processNameMonitor.MonitoringStopped += ProcessNameMonitor_GameExited;
-                processNameMonitor.StartMonitoring(gameName);
+
+                if (!string.IsNullOrEmpty(gameName))
+                {
+                    processNameMonitor.StartMonitoring(gameName);
+                }
+                else
+                {
+                    // Use non empty window titles as tracking fallback.
+                    processNameMonitor.StartMonitoring(gameName, allowEmptyName: true);
+                }
             }
             else
             {
