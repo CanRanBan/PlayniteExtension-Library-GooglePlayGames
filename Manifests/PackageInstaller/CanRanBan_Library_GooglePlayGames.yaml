@@ -34,3 +34,10 @@ Packages:
     PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.1/CanRanBan_Library_GooglePlayGames_v0.2.1.pext
     Changelog:
       - 'Use game ID as fallback for game name if shortcut data parsing is defective.'
+  - Version: 0.2.2
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2024-06-22
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.2/CanRanBan_Library_GooglePlayGames_v0.2.2.pext
+    Changelog:
+      - 'Use non empty window titles as tracking fallback.'
+      - 'Display error message if valid game start URL is missing.'
