@@ -60,6 +60,26 @@ namespace GooglePlayGamesLibrary
                 var gameIdentifier = Game.GameId;
 
                 var gameStartURL = GetGameStartURL(gameIdentifier);
+
+                if (string.IsNullOrEmpty(gameStartURL))
+                {
+                    var missingGameStartURLError = @"No valid game start URL found for '" + Game.Name + @"' with game ID: '" + gameIdentifier + @"'.";
+
+                    logger.Error(missingGameStartURLError);
+
+                    var missingGameStartURLErrorMessage = missingGameStartURLError + "\n" +
+                        "\n" +
+                        @"If the game is properly installed restarting " + GooglePlayGames.ApplicationName + " might fix this issue.\n\n" +
+                        GooglePlayGames.ApplicationName + " creates shortcuts with game start URL data inside:\n"
+                        + @"%AppData%\Microsoft\Windows\Start Menu\Programs\Google Play Games";
+
+                    playniteAPI.Dialogs.ShowErrorMessage(missingGameStartURLErrorMessage);
+
+                    InvokeOnStopped(new GameStoppedEventArgs());
+
+                    return;
+                }
+
                 ProcessStarter.StartUrl(gameStartURL);
 
                 var gameName = GetGameName(gameIdentifier);
