@@ -288,8 +288,10 @@ namespace GooglePlayGamesLibrary
                 }
                 if (string.IsNullOrEmpty(gameName))
                 {
-                    var shortcutDataError = @"Failed to read shortcut data of " + applicationName + @" for '" + gameIdentifier + @"'. Game ID will be used as fallback for game name.";
-                    logger.Info(shortcutDataError);
+                    // This should no longer happen -> Error severity instead of Info.
+
+                    var shortcutDataGameNameError = @"Failed to read shortcut data of " + applicationName + @" for '" + gameIdentifier + @"'. Game ID will be used as fallback for game name.";
+                    logger.Error(shortcutDataGameNameError);
                     gameName = gameIdentifier;
                 }
 
