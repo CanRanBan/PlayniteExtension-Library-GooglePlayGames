@@ -125,13 +125,20 @@ namespace GooglePlayGamesLibrary.Helper
              * Alternative method not depending on knowledge of game names, retrieves emulator process with non empty window title:
              * PowerShell: Get-Process -Name crosvm | Where-Object { ![string]::IsNullOrEmpty($_.MainWindowTitle) }
              *
-             * Result: processID >0 = wanted ID found, 0 = no emulator process open, -1 = game not found despite emulator process(es) open, -2 = other application(s) with same name open
+             * Possible Results:
+             * processID | meaning
+             * >0 = wanted ID found,
+             *  0 = no emulator process open,
+             * -1 = game not found despite emulator process(es) open & empty names NOT allowed,
+             * -2 = game not found despite emulator process(es) open & empty names allowed,
+             * -3 = other application(s) with same name open
              */
             var processID = 0;
 
             // Get emulator process ID of running game for time tracking purposes
             var emulatorExecutableName = GooglePlayGames.EmulatorExecutableName;
             var emulatorProcessList = Process.GetProcessesByName(emulatorExecutableName);
+            var trackingFallbackWindowTitle = string.Empty;
 
             if (emulatorProcessList.Any())
             {
@@ -154,6 +161,11 @@ namespace GooglePlayGamesLibrary.Helper
                     {
                         processID = -1;
 
+                        if (allowEmptyName)
+                        {
+                            processID = -2;
+                        }
+
                         if (!string.IsNullOrEmpty(gameName) && string.Equals(emulatorProcess.MainWindowTitle, gameName))
                         {
                             processID = emulatorProcess.Id;
@@ -162,18 +174,20 @@ namespace GooglePlayGamesLibrary.Helper
 
                             return processID;
                         }
+
                         if (allowEmptyName && !string.Equals(emulatorProcess.MainWindowTitle, string.Empty))
                         {
+                            trackingFallbackWindowTitle = emulatorProcess.MainWindowTitle;
                             processID = emulatorProcess.Id;
 
-                            logger.Trace("Tracking fallback was used. " + emulatorExecutableName + @" with window title matching '" + emulatorProcess.MainWindowTitle + @"' found. Process ID = '" + processID + @"'.");
+                            logger.Trace(emulatorExecutableName + @" with window title matching '" + trackingFallbackWindowTitle + @"' found. Process ID = '" + processID + @"'. Tracking fallback was used.");
 
                             return processID;
                         }
                     }
                     else
                     {
-                        processID = -2;
+                        processID = -3;
                     }
                 }
             }
@@ -187,6 +201,9 @@ namespace GooglePlayGamesLibrary.Helper
                     logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' not found. Empty names are allowed: " + allowEmptyName);
                     break;
                 case -2:
+                    logger.Trace(emulatorExecutableName + @" with window title matching '" + trackingFallbackWindowTitle + @"' not found. Empty names are allowed: " + allowEmptyName);
+                    break;
+                case -3:
                     logger.Trace(@"Other application(s) named '" + emulatorExecutableName + @"' is/are running.");
                     break;
                 default:
