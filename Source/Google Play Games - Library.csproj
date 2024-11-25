@@ -155,10 +155,10 @@
   <Target Name="PostBuildPack" AfterTargets="PostBuildEvent" Condition="('$(Configuration)' == 'ReleasePack') AND ('$(Playnite_Toolbox_Dir)' != '') AND ('$(Playnite_Toolbox_TargetDir)' != '')">
     <Exec Command="%22$(Playnite_Toolbox_Dir)\Toolbox.exe%22 pack %22$(TargetDir.TrimEnd('\'))%22 %22$(Playnite_Toolbox_TargetDir)%22" />
   </Target>
-  <Target Name="PostBuildUpgrade" AfterTargets="PostBuildEvent" Condition="('$(Configuration)' == 'ReleaseUpgrade') AND  ('$(Playnite_Source_Dir)' != '') AND ('$(Playnite_Extensions_Dir)' != '')">
-    <Exec IgnoreExitCode="true" Command="robocopy %22$(TargetDir.TrimEnd('\'))%22 %22$(Playnite_Extensions_Dir)\CanRanBan_Library_GooglePlayGames%22 /mir /copy:DAT /dcopy:DAT /xf %22Playnite.SDK.???%22 /unilog:%22$(Playnite_Source_Dir)\RoboCopy - Logs\RoboCopy - Log - ReleaseUpgrade - Google Play Games on PC Library.txt%22">
+  <Target Name="PostBuildUpgrade" AfterTargets="PostBuildEvent" Condition="('$(Configuration)' == 'ReleaseUpgrade') AND  ('$(RoboCopy_Logs_Dir)' != '') AND ('$(Playnite_Extensions_Dir)' != '')">
+    <Exec IgnoreExitCode="true" Command="robocopy %22$(TargetDir.TrimEnd('\'))%22 %22$(Playnite_Extensions_Dir)\CanRanBan_Library_GooglePlayGames%22 /mir /copy:DAT /dcopy:DAT /xf %22Playnite.SDK.???%22 /unilog:%22$(RoboCopy_Logs_Dir)\RoboCopy - Log - Release Upgrade - $(ProjectName).txt%22">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
     </Exec>
-    <Error Condition="$(ErrorCode) > 7" Text="RoboCopy failed during copy operation of Google Play Games on PC Library project." />
+    <Error Condition="$(ErrorCode) > 7" Text="RoboCopy failed during %22Release Upgrade%22 operation of $(ProjectName) project." />
   </Target>
 </Project>
