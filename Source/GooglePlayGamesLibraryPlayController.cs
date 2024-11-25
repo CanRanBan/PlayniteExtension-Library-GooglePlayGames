@@ -6,6 +6,7 @@ using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using static GooglePlayGamesLibrary.GooglePlayGamesLibrary;
 
 namespace GooglePlayGamesLibrary
@@ -63,6 +64,64 @@ namespace GooglePlayGamesLibrary
             return useTrackingFallback;
         }
 
+        private async void StartGameAsync(string gameStartURL, string gameIdentifier)
+        {
+            var startGameAsyncErrorIdentifier = "GooglePlayGamesStartGameAsyncError";
+
+            Exception startGameAsyncError = null;
+            var startGameAsyncDetailedErrorMessage = "Failed to start game async. Start client succeeded: {0}. Start client skipped: {1}.";
+
+            var startClientSucceeded = false;
+            var startClientSkipped = false;
+
+            try
+            {
+                if (!GooglePlayGames.IsClientOpen())
+                {
+                    GooglePlayGames.StartClient();
+
+                    while (!GooglePlayGames.IsClientOpen())
+                    {
+                        await Task.Delay(1000);
+                    }
+
+                    startClientSucceeded = true;
+                    await Task.Delay(5000);
+                }
+                else
+                {
+                    startClientSkipped = true;
+                }
+
+                ProcessStarter.StartUrl(gameStartURL);
+
+                var gameName = GetGameName(gameIdentifier);
+                var useTrackingFallback = GetUseTrackingFallback(gameIdentifier);
+
+                var processNameMonitor = new ProcessNameMonitor(logger, playniteAPI);
+                processNameMonitor.MonitoringStarted += ProcessNameMonitor_GameStarted;
+                processNameMonitor.MonitoringStopped += ProcessNameMonitor_GameExited;
+
+                // Use non empty window titles as tracking fallback.
+                processNameMonitor.StartMonitoring(gameName, allowEmptyName: useTrackingFallback);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, string.Format(startGameAsyncDetailedErrorMessage, startClientSucceeded, startClientSkipped));
+                startGameAsyncError = e;
+            }
+
+            if (startGameAsyncError != null)
+            {
+                var startGameAsyncErrorMessage = "Failed to start game. Additional details are depicted in 'extensions.log'.";
+                playniteAPI.Notifications.Add(startGameAsyncErrorIdentifier, startGameAsyncErrorMessage, NotificationType.Error);
+            }
+            else
+            {
+                playniteAPI.Notifications.Remove(startGameAsyncErrorIdentifier);
+            }
+        }
+
         public override void Play(PlayActionArgs args)
         {
             Dispose();
@@ -92,17 +151,7 @@ namespace GooglePlayGamesLibrary
                     return;
                 }
 
-                ProcessStarter.StartUrl(gameStartURL);
-
-                var gameName = GetGameName(gameIdentifier);
-                var useTrackingFallback = GetUseTrackingFallback(gameIdentifier);
-
-                var processNameMonitor = new ProcessNameMonitor(logger, playniteAPI);
-                processNameMonitor.MonitoringStarted += ProcessNameMonitor_GameStarted;
-                processNameMonitor.MonitoringStopped += ProcessNameMonitor_GameExited;
-
-                // Use non empty window titles as tracking fallback.
-                processNameMonitor.StartMonitoring(gameName, allowEmptyName: useTrackingFallback);
+                StartGameAsync(gameStartURL, gameIdentifier);
             }
             else
             {
