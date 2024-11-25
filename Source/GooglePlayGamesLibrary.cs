@@ -44,14 +44,25 @@ namespace GooglePlayGamesLibrary
 
         internal readonly struct GameData
         {
-            internal GameData(string gameStartURL, string gameName)
+            internal GameData(string shortcut, string gameStartURL, string gameName, bool useTrackingFallback)
             {
+                this.shortcut = shortcut;
                 this.gameStartURL = gameStartURL;
                 this.gameName = gameName;
+                this.useTrackingFallback = useTrackingFallback;
             }
 
+            internal readonly string shortcut;
             internal readonly string gameStartURL;
             internal readonly string gameName;
+            internal readonly bool useTrackingFallback;
+        }
+
+        private static string GetShortcutName(string shortcut)
+        {
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(shortcut);
+
+            return fileNameWithoutExtension;
         }
 
         private static string GetShortcutDescription(string shortcut)
@@ -64,26 +75,89 @@ namespace GooglePlayGamesLibrary
 
         private static string[] GetShortcutContentArray(string shortcut)
         {
-            var shortcutContent = File.ReadAllText(shortcut);
+            var shortcutContentErrorIdentifier = "GooglePlayGamesShortcutContentError";
 
-            var shortcutContentArray = new string[4];
-            var shortcutContentWithoutNullCharacters = Regex.Replace(shortcutContent, GooglePlayGames.shortcutRemoveNullCharactersRegex, string.Empty);
-            var shortcutContentWithoutSpecialCharacters = Regex.Replace(shortcutContentWithoutNullCharacters, GooglePlayGames.shortcutRemoveControlCharactersAndUnicodeRegex, string.Empty);
-            var shortcutContentGameStartURLArrayUnclean = Regex.Split(shortcutContentWithoutSpecialCharacters, GooglePlayGames.shortcutMatchGameStartURLRegex);
+            Exception shortcutContentDataError = null;
+            var shortcutContentDataErrorMessage = "Failed to read shortcut data. Faulting step: ReadAllText.";
 
-            // googleplaygames://launch/?id=
-            shortcutContentArray[0] = shortcutContentGameStartURLArrayUnclean[1];
-            // <gameID>
-            shortcutContentArray[1] = shortcutContentGameStartURLArrayUnclean[2];
-            // &lid=<someNumber>&pid=<someAdditionalNumber>
-            shortcutContentArray[2] = shortcutContentGameStartURLArrayUnclean[3];
+            Exception shortcutContentMandatoryDataError = null;
+            var shortcutContentMandatoryDataErrorMessage = "Failed to read mandatory shortcut data. Faulting step: GameStartURL.";
 
-            // „<gameName>“, <GooglePlayGames.ApplicationName>
-            var gameNameUnclean = GetShortcutDescription(shortcut);
-            var gameName = Regex.Split(gameNameUnclean, GooglePlayGames.shortcutMatchGameNameRegex);
+            // Exception shortcutContentOptionalDataError = null;
+            var shortcutContentOptionalDataErrorMessage = "Failed to read optional shortcut data. Faulting step: GameName.";
 
-            // <gameName>
-            shortcutContentArray[3] = gameName[1];
+            var shortcutContent = string.Empty;
+            /**
+             *  Resulting array for exemplary game "Eversoul" (at the time of writing this) consists of:
+             *  ["googleplaygames://launch/?id=", = "googleplaygames://launch/?id="
+             *   "<gameID>", = "com.kakaogames.eversoul"
+             *   "&lid=<someNumber>&pid=<someAdditionalNumber>", = "&lid=1&pid=1" (it is unknown if this id combination applies to all possible usage scenarios)
+             *   "<gameName>", = "Eversoul"
+             *   "<shortcutNameWithoutExtension>"] = string.Empty if parsing finished without issues
+             */
+            var shortcutContentArray = new string[5];
+
+            try
+            {
+                shortcutContent = File.ReadAllText(shortcut);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, shortcutContentDataErrorMessage);
+                shortcutContentDataError = e;
+            }
+
+            if (shortcutContentDataError == null)
+            {
+                try
+                {
+                    var shortcutContentWithoutNullCharacters = Regex.Replace(shortcutContent, GooglePlayGames.shortcutRemoveNullCharactersRegex, string.Empty);
+                    var shortcutContentWithoutSpecialCharacters = Regex.Replace(shortcutContentWithoutNullCharacters, GooglePlayGames.shortcutRemoveControlCharactersAndUnicodeRegex, string.Empty);
+                    var shortcutContentGameStartURLArrayUnclean = Regex.Split(shortcutContentWithoutSpecialCharacters, GooglePlayGames.shortcutMatchGameStartURLRegex);
+
+                    // googleplaygames://launch/?id=
+                    shortcutContentArray[0] = shortcutContentGameStartURLArrayUnclean[1];
+                    // <gameID>
+                    shortcutContentArray[1] = shortcutContentGameStartURLArrayUnclean[2];
+                    // &lid=<someNumber>&pid=<someAdditionalNumber>
+                    shortcutContentArray[2] = shortcutContentGameStartURLArrayUnclean[3];
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, shortcutContentMandatoryDataErrorMessage);
+                    shortcutContentMandatoryDataError = e;
+                }
+
+                if (shortcutContentMandatoryDataError == null)
+                {
+                    try
+                    {
+                        // „<gameName>“, <GooglePlayGames.ApplicationName>
+                        var gameNameUnclean = GetShortcutDescription(shortcut);
+                        var gameName = Regex.Split(gameNameUnclean, GooglePlayGames.shortcutMatchGameNameRegex);
+
+                        // <gameName>
+                        shortcutContentArray[3] = gameName[1];
+                    }
+                    catch (Exception e)
+                    {
+                        shortcutContentArray[4] = GetShortcutName(shortcut);
+
+                        logger.Warn(e, shortcutContentOptionalDataErrorMessage);
+                        // shortcutContentOptionalDataError = e;
+                    }
+                }
+            }
+
+            if (shortcutContentDataError != null || shortcutContentMandatoryDataError != null)
+            {
+                var shortcutContentErrorMessage = "Failed to read required shortcut data. Additional details are depicted in 'extensions.log'.";
+                playniteAPI.Notifications.Add(shortcutContentErrorIdentifier, shortcutContentErrorMessage, NotificationType.Error);
+            }
+            else
+            {
+                playniteAPI.Notifications.Remove(shortcutContentErrorIdentifier);
+            }
 
             return shortcutContentArray;
         }
@@ -99,14 +173,41 @@ namespace GooglePlayGamesLibrary
             {
                 var shortcutContentArray = GetShortcutContentArray(shortcut);
 
-                var gameIdentifier = shortcutContentArray[1];
+                string gameIdentifier;
+
+                if (!string.IsNullOrEmpty(shortcutContentArray[1]))
+                {
+                    gameIdentifier = shortcutContentArray[1];
+                }
+                else
+                {
+                    // Should normally never happen unless additional shortcuts not created by Google Play Games were found.
+                    continue;
+                }
 
                 var gameStartURL = string.Join(string.Empty, shortcutContentArray[0], shortcutContentArray[1], shortcutContentArray[2]);
                 var gameName = shortcutContentArray[3];
+                var useTrackingFallback = !string.IsNullOrEmpty(shortcutContentArray[4]);
 
-                var gameData = new GameData(gameStartURL, gameName);
+                // Disallow game start URL retrieval to fail.
+                if (!string.IsNullOrEmpty(gameStartURL))
+                {
+                    GameData gameData;
+                    if (useTrackingFallback)
+                    {
+                        // Parsing of optional shortcut data failed = use shortcut name without extension as game name for game import
+                        gameName = shortcutContentArray[4];
 
-                shortcutData.Add(gameIdentifier, gameData);
+                        gameData = new GameData(shortcut, gameStartURL, gameName, true);
+                    }
+                    else
+                    {
+                        // Parsing finished without issues = use retrieved game name
+                        gameData = new GameData(shortcut, gameStartURL, gameName, false);
+                    }
+
+                    shortcutData.Add(gameIdentifier, gameData);
+                }
             }
 
             return shortcutData;
@@ -156,20 +257,50 @@ namespace GooglePlayGamesLibrary
                 return installedGames;
             }
 
-            var installedGamesShortcutData = GetInstalledGamesShortcutData();
+            var installedGamesShortcutData = new Dictionary<string, GameData>();
+
+            try
+            {
+                installedGamesShortcutData = GetInstalledGamesShortcutData();
+            }
+            catch (Exception)
+            {
+                // Use game ID as fallback for game name if shortcut data parsing is defective.
+            }
 
             var libraryMetadataProvider = new GooglePlayGamesLibraryMetadataProvider();
 
             foreach (var gameIdentifier in installedGamesIdentifiers)
             {
-                var newGameShortcutData = installedGamesShortcutData[gameIdentifier];
+                var gameName = string.Empty;
+
+                if (installedGamesShortcutData.ContainsKey(gameIdentifier))
+                {
+                    var newGameShortcutData = installedGamesShortcutData[gameIdentifier];
+
+                    if (newGameShortcutData.useTrackingFallback)
+                    {
+                        var shortcutDataGameNameFallbackError = @"Failed to retrieve game name from shortcut data of " + applicationName + @" for '" + gameIdentifier + @"'. Shortcut name without extension will be used as fallback for game name.";
+                        logger.Info(shortcutDataGameNameFallbackError);
+                    }
+
+                    gameName = newGameShortcutData.gameName;
+                }
+                if (string.IsNullOrEmpty(gameName))
+                {
+                    // This should no longer happen -> Error severity instead of Info.
+
+                    var shortcutDataGameNameError = @"Failed to read shortcut data of " + applicationName + @" for '" + gameIdentifier + @"'. Game ID will be used as fallback for game name.";
+                    logger.Error(shortcutDataGameNameError);
+                    gameName = gameIdentifier;
+                }
 
                 var newGameMedia = libraryMetadataProvider.GetMetadata(gameIdentifier);
 
                 var newGame = new GameMetadata
                 {
                     GameId = gameIdentifier,
-                    Name = newGameShortcutData.gameName,
+                    Name = gameName,
                     Icon = newGameMedia.Icon,
                     BackgroundImage = newGameMedia.BackgroundImage,
                     IsInstalled = true,
