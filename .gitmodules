@@ -1,4 +1,4 @@
 [submodule "Include/Playnite"]
 	path = Include/Playnite
-	url = https://github.com/CanRanBan/PlayniteFork.git
+	url = https://github.com/CanRanBan/Playnite-64BitFork.git
 	branch = Original
