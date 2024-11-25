@@ -1,7 +1,8 @@
-﻿using Microsoft.Win32;
+﻿using GooglePlayGamesLibrary.Helper;
+using Microsoft.Win32;
 using Playnite.Common;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -52,6 +53,9 @@ namespace GooglePlayGamesLibrary
         internal const string shortcutMatchGameNameRegex = @"(?:\S)(.+)(?:\S\,\s.+)";
 
         private const string exitCommandLineArgument = @"/exit";
+
+        // Workaround for 32-bit Playnite
+        private static readonly bool is32BitPlaynite = Assembly.GetEntryAssembly().GetName().ProcessorArchitecture.Equals(ProcessorArchitecture.X86);
 
         public static string DataPath
         {
@@ -305,7 +309,7 @@ namespace GooglePlayGamesLibrary
                 var servicePath = ServiceExecutablePath;
                 var emulatorPath = EmulatorExecutablePath;
                 return !string.IsNullOrEmpty(mainPath) && !string.IsNullOrEmpty(servicePath) && !string.IsNullOrEmpty(emulatorPath)
-                    && File.Exists(mainPath) && File.Exists(servicePath) && File.Exists(emulatorPath);
+                       && File.Exists(mainPath) && File.Exists(servicePath) && File.Exists(emulatorPath);
             }
         }
 
@@ -319,6 +323,41 @@ namespace GooglePlayGamesLibrary
         public static void ExitClient()
         {
             ProcessStarter.StartProcessWait(MainExecutablePath, exitCommandLineArgument, InstallationPath);
+        }
+
+        public static bool IsClientOpen()
+        {
+            var serviceExecutableName = ServiceExecutableName;
+
+            var serviceProcessList = Process.GetProcessesByName(serviceExecutableName);
+
+            if (!serviceProcessList.Any())
+            {
+                return false;
+            }
+
+            var servicePath = ServiceExecutablePath;
+
+            foreach (var serviceProcess in serviceProcessList)
+            {
+                string processPath;
+
+                if (is32BitPlaynite)
+                {
+                    processPath = ProcessHelper.GetFullPathOfProcessByID((uint)serviceProcess.Id);
+                }
+                else
+                {
+                    processPath = serviceProcess.MainModule?.FileName;
+                }
+
+                if (Paths.AreEqual(servicePath, processPath))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
