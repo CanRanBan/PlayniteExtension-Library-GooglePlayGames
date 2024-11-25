@@ -48,3 +48,9 @@ Packages:
     Changelog:
       - 'Use shortcut name instead of game ID as fallback for game name.'
       - 'Adapt logging behavior to recent fallback changes.'
+  - Version: 0.2.4
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2024-11-25
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.4/CanRanBan_Library_GooglePlayGames_v0.2.4.pext
+    Changelog:
+      - 'Start Google Play Games before game launch if necessary.'
