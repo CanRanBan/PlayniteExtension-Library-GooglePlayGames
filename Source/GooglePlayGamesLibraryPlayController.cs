@@ -78,7 +78,7 @@ namespace GooglePlayGamesLibrary
             {
                 if (!GooglePlayGames.IsClientOpen())
                 {
-                    GooglePlayGames.StartClient();
+                    GooglePlayGames.StartClient(true);
 
                     while (!GooglePlayGames.IsClientOpen())
                     {

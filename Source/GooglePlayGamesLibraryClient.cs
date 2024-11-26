@@ -17,7 +17,7 @@ namespace GooglePlayGamesLibrary
 
         public override void Open()
         {
-            GooglePlayGames.StartClient();
+            GooglePlayGames.StartClient(false);
         }
 
         public override void Shutdown()
