@@ -54,3 +54,9 @@ Packages:
     PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.4/CanRanBan_Library_GooglePlayGames_v0.2.4.pext
     Changelog:
       - 'Start Google Play Games before game launch if necessary.'
+  - Version: 0.2.5
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2024-11-26
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.5/CanRanBan_Library_GooglePlayGames_v0.2.5.pext
+    Changelog:
+      - 'Use background start for Google Play Games if it is part of game launch.'

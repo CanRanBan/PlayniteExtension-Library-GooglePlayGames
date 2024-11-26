@@ -52,6 +52,7 @@ namespace GooglePlayGamesLibrary
         internal const string shortcutMatchGameStartURLRegex = @"(?:.+)(googleplaygames://launch/\?id=)(.+)(&lid=\d+&pid=\d+)(?:.+)";
         internal const string shortcutMatchGameNameRegex = @"(?:\S)(.+)(?:\S\,\s.+)";
 
+        private const string backgroundCommandLineArgument = @"/bg";
         private const string exitCommandLineArgument = @"/exit";
 
         // Workaround for 32-bit Playnite
@@ -315,9 +316,16 @@ namespace GooglePlayGamesLibrary
 
         public static string Icon => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources", @"GooglePlayGamesLibraryIcon.ico");
 
-        public static void StartClient()
+        public static void StartClient(bool background)
         {
-            ProcessStarter.StartProcess(MainExecutablePath, string.Empty, InstallationPath);
+            if (background)
+            {
+                ProcessStarter.StartProcess(MainExecutablePath, backgroundCommandLineArgument, InstallationPath);
+            }
+            else
+            {
+                ProcessStarter.StartProcess(MainExecutablePath, string.Empty, InstallationPath);
+            }
         }
 
         public static void ExitClient()
