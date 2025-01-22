@@ -36,6 +36,13 @@ namespace GooglePlayGamesLibrary
             {
                 gameStartURL = shortcutData[gameIdentifier].gameStartURL;
             }
+            else
+            {
+                gameStartURL = string.Join(string.Empty,
+                    "googleplaygames://launch/?id=",
+                    gameIdentifier,
+                    "&lid=1&pid=1");
+            }
 
             return gameStartURL;
         }
