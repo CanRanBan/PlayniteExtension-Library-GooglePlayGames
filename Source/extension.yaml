@@ -1,7 +1,7 @@
 Id: CanRanBan_Library_GooglePlayGames
 Name: Google Play Games on PC Library
 Author: CanRanBan
-Version: 0.2.5
+Version: 0.2.6
 Module: GooglePlayGamesLibrary.dll
 Type: GameLibrary
 Icon: Resources\GooglePlayGamesLibraryIcon.ico

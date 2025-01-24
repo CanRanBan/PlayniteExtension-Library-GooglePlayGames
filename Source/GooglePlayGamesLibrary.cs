@@ -288,10 +288,10 @@ namespace GooglePlayGamesLibrary
                 }
                 if (string.IsNullOrEmpty(gameName))
                 {
-                    // This should no longer happen -> Error severity instead of Info.
+                    // Command line exit used by auto close client results in an empty shortcut folder = Info severity.
 
                     var shortcutDataGameNameError = @"Failed to read shortcut data of " + applicationName + @" for '" + gameIdentifier + @"'. Game ID will be used as fallback for game name.";
-                    logger.Error(shortcutDataGameNameError);
+                    logger.Info(shortcutDataGameNameError);
                     gameName = gameIdentifier;
                 }
 
