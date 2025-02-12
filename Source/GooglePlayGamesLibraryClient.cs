@@ -1,4 +1,4 @@
-﻿using Playnite.SDK;
+using Playnite.SDK;
 
 namespace GooglePlayGamesLibrary
 {
