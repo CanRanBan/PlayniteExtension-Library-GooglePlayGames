@@ -1,12 +1,12 @@
-using Playnite.SDK;
-using Playnite.SDK.Models;
-using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using Playnite.SDK;
+using Playnite.SDK.Models;
+using Playnite.SDK.Plugins;
 using File = System.IO.File;
 
 namespace GooglePlayGamesLibrary

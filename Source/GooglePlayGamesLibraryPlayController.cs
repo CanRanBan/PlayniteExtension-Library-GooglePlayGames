@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using GooglePlayGamesLibrary.Helper;
 using Playnite.Common;
 using Playnite.SDK;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using static GooglePlayGamesLibrary.GooglePlayGamesLibrary;
 
 namespace GooglePlayGamesLibrary
