@@ -1,4 +1,4 @@
-﻿using GooglePlayGamesLibrary.Helper;
+using GooglePlayGamesLibrary.Helper;
 using Playnite.Common;
 using Playnite.SDK;
 using Playnite.SDK.Models;
