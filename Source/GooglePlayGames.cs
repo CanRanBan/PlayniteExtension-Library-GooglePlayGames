@@ -1,11 +1,11 @@
-using GooglePlayGamesLibrary.Helper;
-using Microsoft.Win32;
-using Playnite.Common;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using GooglePlayGamesLibrary.Helper;
+using Microsoft.Win32;
+using Playnite.Common;
 
 namespace GooglePlayGamesLibrary
 {

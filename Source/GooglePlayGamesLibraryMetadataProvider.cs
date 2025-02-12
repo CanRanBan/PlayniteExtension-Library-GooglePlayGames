@@ -1,6 +1,6 @@
+using System.IO;
 using Playnite.SDK;
 using Playnite.SDK.Models;
-using System.IO;
 
 namespace GooglePlayGamesLibrary
 {
