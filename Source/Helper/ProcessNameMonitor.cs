@@ -1,4 +1,4 @@
-﻿using Playnite.Common;
+using Playnite.Common;
 using Playnite.SDK;
 using System;
 using System.Diagnostics;

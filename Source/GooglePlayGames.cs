@@ -1,4 +1,4 @@
-﻿using GooglePlayGamesLibrary.Helper;
+using GooglePlayGamesLibrary.Helper;
 using Microsoft.Win32;
 using Playnite.Common;
 using System;
