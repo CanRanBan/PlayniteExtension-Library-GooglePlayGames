@@ -1,3 +1,6 @@
+// This file is part of Google Play Games on PC Library. A Playnite extension to import games available on PC from Google Play Games.
+// Copyright CanRanBan, 2023-2025, Licensed under the EUPL-1.2 or later.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
