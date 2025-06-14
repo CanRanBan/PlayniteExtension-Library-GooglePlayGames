@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Playnite.Common;
@@ -169,7 +170,7 @@ namespace GooglePlayGamesLibrary.Helper
                             processID = -2;
                         }
 
-                        if (!string.IsNullOrEmpty(gameName) && string.Equals(emulatorProcess.MainWindowTitle, gameName))
+                        if (!string.IsNullOrEmpty(gameName) && Regex.IsMatch(emulatorProcess.MainWindowTitle, gameName))
                         {
                             processID = emulatorProcess.Id;
 
@@ -178,7 +179,7 @@ namespace GooglePlayGamesLibrary.Helper
                             return processID;
                         }
 
-                        if (allowEmptyName && !string.Equals(emulatorProcess.MainWindowTitle, string.Empty))
+                        if (allowEmptyName && !Regex.IsMatch(emulatorProcess.MainWindowTitle, string.Empty))
                         {
                             trackingFallbackWindowTitle = emulatorProcess.MainWindowTitle;
                             processID = emulatorProcess.Id;
