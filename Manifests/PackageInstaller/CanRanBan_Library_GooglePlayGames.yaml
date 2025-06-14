@@ -66,3 +66,10 @@ Packages:
     PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.6/CanRanBan_Library_GooglePlayGames_v0.2.6.pext
     Changelog:
       - 'Use game ID as fallback for game start URL creation. Required if auto close client is used.'
+  - Version: 0.2.7
+    RequiredApiVersion: 6.9.0
+    ReleaseDate: 2025-06-14
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.7/CanRanBan_Library_GooglePlayGames_v0.2.7.pext
+    Changelog:
+      - 'Change license to EUPL-1.2 or later.'
+      - 'Allow partial matches for window titles to prevent issues caused by variability.'
