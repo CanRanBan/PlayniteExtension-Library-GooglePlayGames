@@ -1,0 +1,7 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">This file is part of $Variable.Named("Software"). $Variable.Named("SimplifiedDescriptionStart")$Variable.Named("SimplifiedDescriptionEnd").&#xD;
+Copyright $Variable.Named("Author"), $Variable.Named("CreationYear")${CurrentDate.Year}, Licensed under the EUPL-1.2 or later.</s:String>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderVariables/=CreationYear/@EntryIndexedValue">2023-</s:String>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderVariables/=SimplifiedDescriptionEnd/@EntryIndexedValue"> to import games available on PC from Google Play Games</s:String>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderVariables/=Software/@EntryIndexedValue">Google Play Games on PC Library</s:String>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EFeature_002EServices_002ECodeCleanup_002EFileHeader_002EFileHeaderSettingsMigrate/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
