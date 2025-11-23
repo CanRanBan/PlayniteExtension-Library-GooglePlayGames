@@ -60,7 +60,7 @@ namespace GooglePlayGamesLibrary.Helper
             processNameMonitorToken?.Dispose();
         }
 
-        internal async void StartMonitoring(string gameName, int trackingDelay = 2000, int trackingStartDelay = 0, bool allowEmptyName = false)
+        internal async void StartMonitoring(string gameName, int trackingDelay = 2000, int trackingStartDelay = 0, int reliabilityDelay = 10000, bool allowEmptyName = false)
         {
             #region RequiredParameterCheck
             var gameNameMissingIdentifier = "GooglePlayGamesGameNameMissing";
@@ -80,6 +80,7 @@ namespace GooglePlayGamesLibrary.Helper
             processNameMonitorToken = new CancellationTokenSource();
 
             var gameStarted = false;
+            var gameNotFoundTimer = 0;
 
             if (trackingStartDelay > 0)
             {
@@ -103,7 +104,20 @@ namespace GooglePlayGamesLibrary.Helper
                     gameStarted = true;
                 }
 
-                if (gameStarted && gameProcessID <= 0)
+                #region ReliabilityDelay
+                // Ensure game is no longer running without treating unexpected process behavior as a game exit
+                if (gameStarted && gameProcessID > 0)
+                {
+                    gameNotFoundTimer = 0;
+                }
+
+                if (gameStarted && gameProcessID <= 0 && gameNotFoundTimer < reliabilityDelay)
+                {
+                    gameNotFoundTimer += trackingDelay;
+                }
+                #endregion ReliabilityDelay
+
+                if (gameStarted && gameProcessID <= 0 && gameNotFoundTimer >= reliabilityDelay)
                 {
                     OnMonitoringStopped();
 
