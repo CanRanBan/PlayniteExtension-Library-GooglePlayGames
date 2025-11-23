@@ -1,0 +1,2 @@
+- Change license to EUPL-1.2 or later.
+- Allow partial matches for window titles to prevent issues caused by variability.
