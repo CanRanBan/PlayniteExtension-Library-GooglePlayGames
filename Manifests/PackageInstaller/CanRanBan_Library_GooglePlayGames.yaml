@@ -73,3 +73,10 @@ Packages:
     Changelog:
       - 'Change license to EUPL-1.2 or later.'
       - 'Allow partial matches for window titles to prevent issues caused by variability.'
+  - Version: 0.2.8
+    RequiredApiVersion: 6.13.0
+    ReleaseDate: 2025-11-23
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.8/CanRanBan_Library_GooglePlayGames_v0.2.8.pext
+    Changelog:
+      - 'Prevent unwanted game exit caused by unexpected process behavior.'
+      - 'Upgrade PlayniteSDK to latest stable version.'
