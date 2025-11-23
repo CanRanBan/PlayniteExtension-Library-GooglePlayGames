@@ -36,7 +36,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           body_path: Notes/LatestRelease.txt
-          draft: true
+          draft: false
           prerelease: false
           files: |
             Toolbox/*.pext
