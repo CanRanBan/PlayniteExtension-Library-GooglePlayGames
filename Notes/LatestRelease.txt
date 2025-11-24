@@ -1,2 +1,1 @@
-- Prevent unwanted game exit caused by unexpected process behavior.
-- Upgrade PlayniteSDK to latest stable version.
+- Move time tracking to process name monitor to improve accuracy.

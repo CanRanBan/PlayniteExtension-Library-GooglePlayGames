@@ -80,3 +80,9 @@ Packages:
     Changelog:
       - 'Prevent unwanted game exit caused by unexpected process behavior.'
       - 'Upgrade PlayniteSDK to latest stable version.'
+  - Version: 0.2.9
+    RequiredApiVersion: 6.13.0
+    ReleaseDate: 2025-11-25
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.9/CanRanBan_Library_GooglePlayGames_v0.2.9.pext
+    Changelog:
+      - 'Move time tracking to process name monitor to improve accuracy.'
