@@ -151,6 +151,7 @@ namespace GooglePlayGamesLibrary.Helper
 
         private int GetProcessID(string gameName, bool allowEmptyName)
         {
+            // ReSharper disable once InvalidXmlDocComment
             /**
              * Explanation how GetProcessID works using PowerShell examples:
              *
