@@ -132,11 +132,12 @@ namespace GooglePlayGamesLibrary.Helper
                     stopWatch?.Stop();
 
                     var sessionLength = stopWatch?.Elapsed.TotalSeconds ?? 0;
+                    var reliabilityDelayInSeconds = TimeSpan.FromMilliseconds(reliabilityDelay).TotalSeconds;
 
                     // Return session length without reliability delay to improve accuracy
-                    if (sessionLength >= reliabilityDelay)
+                    if (sessionLength >= reliabilityDelayInSeconds)
                     {
-                        sessionLength -= reliabilityDelay;
+                        sessionLength -= reliabilityDelayInSeconds;
                     }
 
                     OnMonitoringStopped(Convert.ToUInt64(sessionLength));
