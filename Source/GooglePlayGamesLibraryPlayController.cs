@@ -21,8 +21,6 @@ namespace GooglePlayGamesLibrary
 
         private readonly Dictionary<string, GameData> shortcutData = GetInstalledGamesShortcutData();
 
-        private Stopwatch stopWatch;
-
         public GooglePlayGamesLibraryPlayController(ILogger logger, IPlayniteAPI playniteAPI, Game game) : base(game)
         {
             this.logger = logger;
@@ -171,14 +169,12 @@ namespace GooglePlayGamesLibrary
 
         private void ProcessNameMonitor_GameStarted(object sender, ProcessNameMonitor.MonitoringStartedEventArgs args)
         {
-            stopWatch = Stopwatch.StartNew();
             InvokeOnStarted(new GameStartedEventArgs() { StartedProcessId = args.GameProcessID });
         }
 
-        private void ProcessNameMonitor_GameExited(object sender, EventArgs args)
+        private void ProcessNameMonitor_GameExited(object sender, ProcessNameMonitor.MonitoringStoppedEventArgs args)
         {
-            stopWatch?.Stop();
-            InvokeOnStopped(new GameStoppedEventArgs(Convert.ToUInt64(stopWatch?.Elapsed.TotalSeconds ?? 0)));
+            InvokeOnStopped(new GameStoppedEventArgs() { SessionLength = args.GameSessionLength });
         }
     }
 }
