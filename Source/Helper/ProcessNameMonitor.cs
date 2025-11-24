@@ -21,6 +21,8 @@ namespace GooglePlayGamesLibrary.Helper
         private readonly ILogger logger;
         private readonly IPlayniteAPI playniteAPI;
 
+        private Stopwatch stopWatch;
+
         // Workaround for 32-bit Playnite
         private readonly bool is32BitPlaynite = Assembly.GetEntryAssembly().GetName().ProcessorArchitecture.Equals(ProcessorArchitecture.X86);
 
@@ -35,8 +37,14 @@ namespace GooglePlayGamesLibrary.Helper
             internal int GameProcessID { get; set; }
         }
 
+        internal class MonitoringStoppedEventArgs
+        {
+            internal ulong GameSessionLength { get; set; }
+        }
+
         internal event EventHandler<MonitoringStartedEventArgs> MonitoringStarted;
-        internal event EventHandler MonitoringStopped;
+        internal event EventHandler<MonitoringStoppedEventArgs> MonitoringStopped;
+
         #endregion EventHandling
 
         internal ProcessNameMonitor(ILogger logger, IPlayniteAPI playniteAPI)
@@ -99,6 +107,8 @@ namespace GooglePlayGamesLibrary.Helper
 
                 if (!gameStarted && gameProcessID > 0)
                 {
+                    stopWatch = Stopwatch.StartNew();
+
                     OnMonitoringStarted(gameProcessID);
 
                     gameStarted = true;
@@ -119,7 +129,17 @@ namespace GooglePlayGamesLibrary.Helper
 
                 if (gameStarted && gameProcessID <= 0 && gameNotFoundTimer >= reliabilityDelay)
                 {
-                    OnMonitoringStopped();
+                    stopWatch?.Stop();
+
+                    var sessionLength = stopWatch?.Elapsed.TotalSeconds ?? 0;
+
+                    // Return session length without reliability delay to improve accuracy
+                    if (sessionLength >= reliabilityDelay)
+                    {
+                        sessionLength -= reliabilityDelay;
+                    }
+
+                    OnMonitoringStopped(Convert.ToUInt64(sessionLength));
 
                     return;
                 }
@@ -237,9 +257,9 @@ namespace GooglePlayGamesLibrary.Helper
             processNameMonitorContext.Post((a) => MonitoringStarted?.Invoke(this, new MonitoringStartedEventArgs { GameProcessID = processId }), null);
         }
 
-        private void OnMonitoringStopped()
+        private void OnMonitoringStopped(ulong sessionLength)
         {
-            processNameMonitorContext.Post((a) => MonitoringStopped?.Invoke(this, EventArgs.Empty), null);
+            processNameMonitorContext.Post((a) => MonitoringStopped?.Invoke(this, new MonitoringStoppedEventArgs { GameSessionLength = sessionLength }), null);
         }
     }
 }
