@@ -252,9 +252,9 @@ namespace GooglePlayGamesLibrary.Helper
             return processID;
         }
 
-        private void OnMonitoringStarted(int processId)
+        private void OnMonitoringStarted(int processID)
         {
-            processNameMonitorContext.Post((a) => MonitoringStarted?.Invoke(this, new MonitoringStartedEventArgs { GameProcessID = processId }), null);
+            processNameMonitorContext.Post((a) => MonitoringStarted?.Invoke(this, new MonitoringStartedEventArgs { GameProcessID = processID }), null);
         }
 
         private void OnMonitoringStopped(ulong sessionLength)
