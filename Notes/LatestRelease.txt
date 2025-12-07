@@ -1,1 +1,5 @@
-- Move time tracking to process name monitor to improve accuracy.
+- Stop process name monitor if tracking is canceled.
+- Stop process name monitor if game start causes an error.
+- Add additional trace logging.
+- Log rare process exceptions without treating them as an error.
+- Remove monitoring stop before game start.
