@@ -124,6 +124,7 @@ namespace GooglePlayGamesLibrary
             {
                 var startGameAsyncErrorMessage = "Failed to start game. Additional details are depicted in 'extensions.log'.";
                 playniteAPI.Notifications.Add(startGameAsyncErrorIdentifier, startGameAsyncErrorMessage, NotificationType.Error);
+                processNameMonitor?.StopMonitoring();
             }
             else
             {
