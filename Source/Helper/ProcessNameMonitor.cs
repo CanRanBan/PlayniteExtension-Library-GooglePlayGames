@@ -182,10 +182,13 @@ namespace GooglePlayGamesLibrary.Helper
              */
             var processID = 0;
 
-            // Get emulator process ID of running game for time tracking purposes
-            var emulatorExecutableName = GooglePlayGames.EmulatorExecutableName;
-            var emulatorProcessList = Process.GetProcessesByName(emulatorExecutableName);
-            var trackingFallbackWindowTitle = string.Empty;
+            // Log exceptions without treating them as an error
+            try
+            {
+                // Get emulator process ID of running game for time tracking purposes
+                var emulatorExecutableName = GooglePlayGames.EmulatorExecutableName;
+                var emulatorProcessList = Process.GetProcessesByName(emulatorExecutableName);
+                var trackingFallbackWindowTitle = string.Empty;
 
             if (emulatorProcessList.Any())
             {
@@ -239,23 +242,28 @@ namespace GooglePlayGamesLibrary.Helper
                 }
             }
 
-            switch (processID)
+                switch (processID)
+                {
+                    case 0:
+                        logger.Trace(emulatorExecutableName + @" is currently not running.");
+                        break;
+                    case -1:
+                        logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' not found. Empty names are allowed: " + allowEmptyName);
+                        break;
+                    case -2:
+                        logger.Trace(emulatorExecutableName + @" with window title matching '" + trackingFallbackWindowTitle + @"' not found. Empty names are allowed: " + allowEmptyName);
+                        break;
+                    case -3:
+                        logger.Trace(@"Other application(s) named '" + emulatorExecutableName + @"' is/are running.");
+                        break;
+                    default:
+                        logger.Error(@"Returned ID is outside of expected range. Game Name = '" + gameName + @"', Process ID = '" + processID + @"'.");
+                        break;
+                }
+            }
+            catch (Exception e)
             {
-                case 0:
-                    logger.Trace(emulatorExecutableName + @" is currently not running.");
-                    break;
-                case -1:
-                    logger.Trace(emulatorExecutableName + @" with window title matching '" + gameName + @"' not found. Empty names are allowed: " + allowEmptyName);
-                    break;
-                case -2:
-                    logger.Trace(emulatorExecutableName + @" with window title matching '" + trackingFallbackWindowTitle + @"' not found. Empty names are allowed: " + allowEmptyName);
-                    break;
-                case -3:
-                    logger.Trace(@"Other application(s) named '" + emulatorExecutableName + @"' is/are running.");
-                    break;
-                default:
-                    logger.Error(@"Returned ID is outside of expected range. Game Name = '" + gameName + @"', Process ID = '" + processID + @"'.");
-                    break;
+                logger.Debug(e, @"ProcessNameMonitor: GetProcessID Exception.");
             }
 
             return processID;
