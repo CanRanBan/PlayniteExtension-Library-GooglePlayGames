@@ -20,6 +20,7 @@ namespace GooglePlayGamesLibrary
         private readonly IPlayniteAPI playniteAPI;
 
         private readonly Dictionary<string, GameData> shortcutData = GetInstalledGamesShortcutData();
+        private ProcessNameMonitor processNameMonitor;
 
         public GooglePlayGamesLibraryPlayController(ILogger logger, IPlayniteAPI playniteAPI, Game game) : base(game)
         {
@@ -106,7 +107,7 @@ namespace GooglePlayGamesLibrary
                 var gameName = GetGameName(gameIdentifier);
                 var useTrackingFallback = GetUseTrackingFallback(gameIdentifier);
 
-                var processNameMonitor = new ProcessNameMonitor(logger, playniteAPI);
+                processNameMonitor = new ProcessNameMonitor(logger, playniteAPI);
                 processNameMonitor.MonitoringStarted += ProcessNameMonitor_GameStarted;
                 processNameMonitor.MonitoringStopped += ProcessNameMonitor_GameExited;
 
@@ -128,6 +129,11 @@ namespace GooglePlayGamesLibrary
             {
                 playniteAPI.Notifications.Remove(startGameAsyncErrorIdentifier);
             }
+        }
+
+        public override void Dispose()
+        {
+            processNameMonitor?.Dispose();
         }
 
         public override void Play(PlayActionArgs args)
