@@ -140,8 +140,6 @@ namespace GooglePlayGamesLibrary
 
         public override void Play(PlayActionArgs args)
         {
-            Dispose();
-
             if (Game.IsInstalled)
             {
                 var gameIdentifier = Game.GameId;
