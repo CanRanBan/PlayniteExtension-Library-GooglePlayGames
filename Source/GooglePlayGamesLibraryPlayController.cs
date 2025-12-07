@@ -134,6 +134,7 @@ namespace GooglePlayGamesLibrary
 
         public override void Dispose()
         {
+            logger.Trace(GooglePlayGames.ApplicationName + @" Play Controller: Dispose.");
             processNameMonitor?.Dispose();
         }
 
@@ -176,11 +177,13 @@ namespace GooglePlayGamesLibrary
 
         private void ProcessNameMonitor_GameStarted(object sender, ProcessNameMonitor.MonitoringStartedEventArgs args)
         {
+            logger.Trace(GooglePlayGames.ApplicationName + @" Play Controller: Game Started Event.");
             InvokeOnStarted(new GameStartedEventArgs() { StartedProcessId = args.GameProcessID });
         }
 
         private void ProcessNameMonitor_GameExited(object sender, ProcessNameMonitor.MonitoringStoppedEventArgs args)
         {
+            logger.Trace(GooglePlayGames.ApplicationName + @" Play Controller: Game Stopped Event.");
             InvokeOnStopped(new GameStoppedEventArgs() { SessionLength = args.GameSessionLength });
         }
     }

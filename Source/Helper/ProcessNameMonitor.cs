@@ -58,18 +58,23 @@ namespace GooglePlayGamesLibrary.Helper
         // Cleanup
         public void Dispose()
         {
+            logger.Trace(@"ProcessNameMonitor: Dispose.");
             StopMonitoring();
         }
 
         #region Monitoring
         internal void StopMonitoring()
         {
+            logger.Trace(@"ProcessNameMonitor: Stop Monitoring.");
+
             processNameMonitorToken?.Cancel();
             processNameMonitorToken?.Dispose();
         }
 
         internal async void StartMonitoring(string gameName, int trackingDelay = 2000, int trackingStartDelay = 0, int reliabilityDelay = 10000, bool allowEmptyName = false)
         {
+            logger.Trace(@"ProcessNameMonitor: Start Monitoring.");
+
             #region RequiredParameterCheck
             var gameNameMissingIdentifier = "GooglePlayGamesGameNameMissing";
 
@@ -100,6 +105,8 @@ namespace GooglePlayGamesLibrary.Helper
             {
                 if (processNameMonitorToken.IsCancellationRequested)
                 {
+                    logger.Trace(@"ProcessNameMonitor: Cancellation Requested Token.");
+
                     return;
                 }
 
@@ -256,11 +263,13 @@ namespace GooglePlayGamesLibrary.Helper
 
         private void OnMonitoringStarted(int processID)
         {
+            logger.Trace(@"ProcessNameMonitor: Monitoring Started Event.");
             processNameMonitorContext.Post((a) => MonitoringStarted?.Invoke(this, new MonitoringStartedEventArgs { GameProcessID = processID }), null);
         }
 
         private void OnMonitoringStopped(ulong sessionLength)
         {
+            logger.Trace(@"ProcessNameMonitor: Monitoring Stopped Event.");
             processNameMonitorContext.Post((a) => MonitoringStopped?.Invoke(this, new MonitoringStoppedEventArgs { GameSessionLength = sessionLength }), null);
         }
     }
