@@ -86,3 +86,13 @@ Packages:
     PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.9/CanRanBan_Library_GooglePlayGames_v0.2.9.pext
     Changelog:
       - 'Move time tracking to process name monitor to improve accuracy.'
+  - Version: 0.2.10
+    RequiredApiVersion: 6.13.0
+    ReleaseDate: 2025-12-07
+    PackageUrl: https://github.com/CanRanBan/PlayniteExtension-Library-GooglePlayGames/releases/download/v0.2.10/CanRanBan_Library_GooglePlayGames_v0.2.10.pext
+    Changelog:
+      - 'Stop process name monitor if tracking is canceled.'
+      - 'Stop process name monitor if game start causes an error.'
+      - 'Add additional trace logging.'
+      - 'Log rare process exceptions without treating them as an error.'
+      - 'Remove monitoring stop before game start.'
