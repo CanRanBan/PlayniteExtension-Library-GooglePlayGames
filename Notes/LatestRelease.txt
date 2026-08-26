@@ -1,5 +1,2 @@
-- Stop process name monitor if tracking is canceled.
-- Stop process name monitor if game start causes an error.
-- Add additional trace logging.
-- Log rare process exceptions without treating them as an error.
-- Remove monitoring stop before game start.
+- Use correct paths for customized installation.
+- Upgrade PlayniteSDK to latest stable version.
