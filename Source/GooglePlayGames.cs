@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Principal;
 using GooglePlayGamesLibrary.Helper;
 using Microsoft.Win32;
 using Playnite.Common;
@@ -324,7 +325,25 @@ namespace GooglePlayGamesLibrary
                 var dataPath = DataPath;
                 if (!string.IsNullOrEmpty(dataPath))
                 {
-                    string imageCachePath = Path.Combine(dataPath, imageCacheFolder);
+                    string imageCachePath;
+
+                    if (IsCustomInstallation)
+                    {
+                        var currentUserSecurityIdentifier = WindowsIdentity.GetCurrent().User;
+                        if (currentUserSecurityIdentifier != null)
+                        {
+                            imageCachePath = Path.Combine(dataPath, currentUserSecurityIdentifier.ToString(), imageCacheFolder);
+                        }
+                        else
+                        {
+                            return string.Empty;
+                        }
+                    }
+                    else
+                    {
+                        imageCachePath = Path.Combine(dataPath, imageCacheFolder);
+                    }
+
                     if (Directory.Exists(imageCachePath))
                     {
                         return imageCachePath;
