@@ -431,6 +431,24 @@ namespace GooglePlayGamesLibrary
             }
         }
 
+        public static bool IsCustomInstallation
+        {
+            get
+            {
+                var defaultInstallPath = DefaultInstallationPath;
+                var installPath = InstallationPath;
+                if (!string.IsNullOrEmpty(defaultInstallPath) && !string.IsNullOrEmpty(installPath))
+                {
+                    if (!Paths.AreEqual(defaultInstallPath, installPath))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
         public static bool IsInstalled
         {
             get
