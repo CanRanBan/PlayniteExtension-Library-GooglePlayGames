@@ -287,6 +287,36 @@ namespace GooglePlayGamesLibrary
             }
         }
 
+        public static string DefaultInstallationPath
+        {
+            get
+            {
+                string defaultInstallationPath;
+
+                // Default location for MainExecutablePath.
+                var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                defaultInstallationPath = Path.Combine(programFiles, companyName, productName);
+                if (Directory.Exists(defaultInstallationPath))
+                {
+                    return defaultInstallationPath;
+                }
+
+                // Additionally check 32-Bit folder on 64-Bit OS if not found in 64-Bit part.
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                    defaultInstallationPath = Path.Combine(programFiles, companyName, productName);
+
+                    if (Directory.Exists(defaultInstallationPath))
+                    {
+                        return defaultInstallationPath;
+                    }
+                }
+
+                return string.Empty;
+            }
+        }
+
         public static string ImageCachePath
         {
             get
@@ -361,8 +391,8 @@ namespace GooglePlayGamesLibrary
         {
             get
             {
-                var installPath = InstallationPath;
-                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, mainExecutableName + executableExtension);
+                var defaultInstallPath = DefaultInstallationPath;
+                return string.IsNullOrEmpty(defaultInstallPath) ? string.Empty : Path.Combine(defaultInstallPath, mainExecutableName + executableExtension);
             }
         }
 
