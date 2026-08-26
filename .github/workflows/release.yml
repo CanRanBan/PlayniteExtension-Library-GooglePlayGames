@@ -7,7 +7,7 @@ name: Release Build
 
 jobs:
   build:
-    runs-on: windows-2025
+    runs-on: windows-2022
     steps:
       - name: Checkout repository and submodules
         uses: actions/checkout@v6
