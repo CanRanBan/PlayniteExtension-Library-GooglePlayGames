@@ -82,14 +82,10 @@ namespace GooglePlayGamesLibrary
                         {
                             if (key?.GetValueNames().Contains(customDataPathKey) == true)
                             {
-                                var rootPath = key.GetValue(customDataPathKey)?.ToString();
-                                if (!string.IsNullOrEmpty(rootPath))
+                                dataPath = key.GetValue(customDataPathKey)?.ToString();
+                                if (Directory.Exists(dataPath))
                                 {
-                                    dataPath = Path.Combine(rootPath, companyName, productName);
-                                    if (Directory.Exists(dataPath))
-                                    {
-                                        return dataPath;
-                                    }
+                                    return dataPath;
                                 }
                             }
                         }
@@ -104,14 +100,10 @@ namespace GooglePlayGamesLibrary
                     {
                         if (key?.GetValueNames().Contains(customDataPathKey) == true)
                         {
-                            var rootPath = key.GetValue(customDataPathKey)?.ToString();
-                            if (!string.IsNullOrEmpty(rootPath))
+                            dataPath = key.GetValue(customDataPathKey)?.ToString();
+                            if (Directory.Exists(dataPath))
                             {
-                                dataPath = Path.Combine(rootPath, companyName, productName);
-                                if (Directory.Exists(dataPath))
-                                {
-                                    return dataPath;
-                                }
+                                return dataPath;
                             }
                         }
                     }
