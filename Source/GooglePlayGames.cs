@@ -22,6 +22,7 @@ namespace GooglePlayGamesLibrary
         private const string registryFolder = @"SOFTWARE\" + companyName + @"\" + productName;
 
         private const string customDataPathKey = @"CustomInstallLocationUserAppDataFolder";
+        private const string customInstallPathKey = @"CustomInstallLocationProgramFilesFolder";
         private const string dataPathKey = @"UserLocalAppDataRoot";
         private const string installPathKey = @"InstallFolder";
 
@@ -182,6 +183,48 @@ namespace GooglePlayGamesLibrary
             {
                 string installationPath;
 
+                #region CustomInstallationPath
+                // Check for customized installation first (higher priority).
+                // Retrieve registry view matching operating system architecture (64-Bit or 32-Bit).
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    using (var registryKeyLocalMachine =
+                           RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                    {
+                        using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
+                        {
+                            if (key?.GetValueNames().Contains(customInstallPathKey) == true)
+                            {
+                                installationPath = key.GetValue(customInstallPathKey)?.ToString();
+                                if (Directory.Exists(installationPath))
+                                {
+                                    return installationPath;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Additionally check 32-Bit view on 64-Bit OS if not found in 64-Bit part.
+                using (var registryKeyLocalMachine =
+                       RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
+                {
+                    using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
+                    {
+                        if (key?.GetValueNames().Contains(customInstallPathKey) == true)
+                        {
+                            installationPath = key.GetValue(customInstallPathKey)?.ToString();
+                            if (Directory.Exists(installationPath))
+                            {
+                                return installationPath;
+                            }
+                        }
+                    }
+                }
+                #endregion CustomInstallationPath
+
+                #region DefaultInstallationPath
+                // Check for default installation second (lower priority).
                 // Retrieve registry view matching operating system architecture (64-Bit or 32-Bit).
                 if (Environment.Is64BitOperatingSystem)
                 {
@@ -218,6 +261,7 @@ namespace GooglePlayGamesLibrary
                         }
                     }
                 }
+                #endregion DefaultInstallationPath
 
                 // Fallback to default location if registry key is missing.
                 var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
