@@ -41,9 +41,9 @@ namespace GooglePlayGamesLibrary
         internal const string GameBackgroundIdentifierTypePNG = gameBackgroundIdentifier + imageTypePNGExtension;
         internal const string gameLogoIdentifierTypePNG = gameLogoIdentifier + imageTypePNGExtension;
 
-        private const string mainExecutableName = @"Bootstrapper";
-        internal const string ServiceExecutableName = @"Service";
-        internal const string EmulatorExecutableName = @"crosvm";
+        private const string mainExecutableName = @"Bootstrapper"; // Always in default install path.
+        internal const string ServiceExecutableName = @"Service"; // Either in custom install path or in default install path.
+        internal const string EmulatorExecutableName = @"crosvm"; // Either in custom install path or in default install path.
 
         private const string executableExtension = @".exe";
 
