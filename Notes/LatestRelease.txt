@@ -1,2 +1,3 @@
-- Use correct paths for customized installation.
-- Upgrade PlayniteSDK to latest stable version.
+- Use registry keys for custom installation check.
+- Check for main executable even if custom installation check fails.
+- Fix default installation path.
