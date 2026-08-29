@@ -402,8 +402,18 @@ namespace GooglePlayGamesLibrary
         {
             get
             {
-                var defaultInstallPath = DefaultInstallationPath;
-                return string.IsNullOrEmpty(defaultInstallPath) ? string.Empty : Path.Combine(defaultInstallPath, mainExecutableName + executableExtension);
+                string installPath;
+
+                if (IsCustomInstallation)
+                {
+                    installPath = DefaultInstallationPath;
+                }
+                else
+                {
+                    installPath = InstallationPath;
+                }
+                
+                return string.IsNullOrEmpty(installPath) ? string.Empty : Path.Combine(installPath, mainExecutableName + executableExtension);
             }
         }
 
@@ -520,10 +530,10 @@ namespace GooglePlayGamesLibrary
                     using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
                     {
                         if (key?.GetValueNames().Contains(customInstallPathKey) == true)
-                {
+                        {
                             installationPath = key.GetValue(customInstallPathKey)?.ToString();
                             if (Directory.Exists(installationPath))
-                    {
+                            {
                                 customInstallationPathExists = true;
                             }
                         }
