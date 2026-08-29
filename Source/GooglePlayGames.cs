@@ -61,8 +61,10 @@ namespace GooglePlayGamesLibrary
         private const string backgroundCommandLineArgument = @"/bg";
         private const string exitCommandLineArgument = @"/exit";
 
-        // Workaround for 32-bit Playnite
+        // Workarounds for 32-bit Playnite
         private static readonly bool is32BitPlaynite = Assembly.GetEntryAssembly().GetName().ProcessorArchitecture.Equals(ProcessorArchitecture.X86);
+        private const string ProgramFiles64BitRegistryFolder = @"SOFTWARE\Microsoft\Windows\CurrentVersion";
+        private const string ProgramFiles64BitRegistryKey = @"ProgramFilesDir";
 
         public static string DataPath
         {
@@ -257,26 +259,7 @@ namespace GooglePlayGamesLibrary
                 #endregion DefaultInstallationPath
 
                 // Fallback to default location if registry key is missing.
-                var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                installationPath = Path.Combine(programFiles, companyName, productName);
-                if (Directory.Exists(installationPath))
-                {
-                    return installationPath;
-                }
-
-                // Additionally check 32-Bit folder on 64-Bit OS if not found in 64-Bit part.
-                if (Environment.Is64BitOperatingSystem)
-                {
-                    programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-                    installationPath = Path.Combine(programFiles, companyName, productName);
-
-                    if (Directory.Exists(installationPath))
-                    {
-                        return installationPath;
-                    }
-                }
-
-                return string.Empty;
+                return DefaultInstallationPath;
             }
         }
 
@@ -285,13 +268,41 @@ namespace GooglePlayGamesLibrary
             get
             {
                 string defaultInstallationPath;
+                string programFiles;
 
                 // Default location for MainExecutablePath.
-                var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                defaultInstallationPath = Path.Combine(programFiles, companyName, productName);
-                if (Directory.Exists(defaultInstallationPath))
+                if (is32BitPlaynite)
                 {
-                    return defaultInstallationPath;
+                    using (var registryKeyLocalMachine =
+                           RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                    {
+                        using (var key = registryKeyLocalMachine.OpenSubKey(ProgramFiles64BitRegistryFolder))
+                        {
+                            if (key?.GetValueNames().Contains(ProgramFiles64BitRegistryKey) == true)
+                            {
+                                programFiles = key.GetValue(ProgramFiles64BitRegistryKey)?.ToString();
+                                if (!string.IsNullOrEmpty(programFiles))
+                                {
+                                    defaultInstallationPath = Path.Combine(programFiles, companyName, productName);
+
+                                    if (Directory.Exists(programFiles))
+                                    {
+                                        return defaultInstallationPath;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                    defaultInstallationPath = Path.Combine(programFiles, companyName, productName);
+
+                    if (Directory.Exists(defaultInstallationPath))
+                    {
+                        return defaultInstallationPath;
+                    }
                 }
 
                 // Additionally check 32-Bit folder on 64-Bit OS if not found in 64-Bit part.
