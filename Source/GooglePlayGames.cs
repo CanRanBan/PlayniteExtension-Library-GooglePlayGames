@@ -446,17 +446,92 @@ namespace GooglePlayGamesLibrary
         {
             get
             {
-                var defaultInstallPath = DefaultInstallationPath;
-                var installPath = InstallationPath;
-                if (!string.IsNullOrEmpty(defaultInstallPath) && !string.IsNullOrEmpty(installPath))
+                string dataPath;
+                string installationPath;
+
+                bool customDataPathExists = false;
+                bool customInstallationPathExists = false;
+
+
+                #region CustomDataPath
+                // Retrieve registry view matching operating system architecture (64-Bit or 32-Bit).
+                if (Environment.Is64BitOperatingSystem)
                 {
-                    if (!Paths.AreEqual(defaultInstallPath, installPath))
+                    using (var registryKeyLocalMachine =
+                           RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
                     {
-                        return true;
+                        using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
+                        {
+                            if (key?.GetValueNames().Contains(customDataPathKey) == true)
+                            {
+                                dataPath = key.GetValue(customDataPathKey)?.ToString();
+                                if (Directory.Exists(dataPath))
+                                {
+                                    customDataPathExists = true;
+                                }
+                            }
+                        }
                     }
                 }
 
-                return false;
+                // Additionally check 32-Bit view on 64-Bit OS if not found in 64-Bit part.
+                using (var registryKeyLocalMachine =
+                       RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
+                {
+                    using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
+                    {
+                        if (key?.GetValueNames().Contains(customDataPathKey) == true)
+                        {
+                            dataPath = key.GetValue(customDataPathKey)?.ToString();
+                            if (Directory.Exists(dataPath))
+                            {
+                                customDataPathExists = true;
+                            }
+                        }
+                    }
+                }
+                #endregion CustomDataPath
+
+                #region CustomInstallationPath
+                // Retrieve registry view matching operating system architecture (64-Bit or 32-Bit).
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    using (var registryKeyLocalMachine =
+                           RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                    {
+                        using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
+                        {
+                            if (key?.GetValueNames().Contains(customInstallPathKey) == true)
+                            {
+                                installationPath = key.GetValue(customInstallPathKey)?.ToString();
+                                if (Directory.Exists(installationPath))
+                                {
+                                    customInstallationPathExists = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Additionally check 32-Bit view on 64-Bit OS if not found in 64-Bit part.
+                using (var registryKeyLocalMachine =
+                       RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
+                {
+                    using (var key = registryKeyLocalMachine.OpenSubKey(registryFolder))
+                    {
+                        if (key?.GetValueNames().Contains(customInstallPathKey) == true)
+                {
+                            installationPath = key.GetValue(customInstallPathKey)?.ToString();
+                            if (Directory.Exists(installationPath))
+                    {
+                                customInstallationPathExists = true;
+                            }
+                        }
+                    }
+                }
+                #endregion CustomInstallationPath
+
+                return customDataPathExists && customInstallationPathExists;
             }
         }
 
